@@ -72,8 +72,8 @@ ActionBar.TabListener {
 			}
 		});
 
-		SmackAndroid.init(this);
-		new ConnectToXmpp().execute();
+		/*SmackAndroid.init(this);
+		new ConnectToXmpp().execute();*/
 	}
 
 	@Override
@@ -99,7 +99,7 @@ ActionBar.TabListener {
 		return true;
 	}
 
-	private class ConnectToXmpp extends AsyncTask<Void, Void, Void> {
+	/*private class ConnectToXmpp extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -132,5 +132,5 @@ ActionBar.TabListener {
 
 		}
 
-	}
+	}*/
 }
