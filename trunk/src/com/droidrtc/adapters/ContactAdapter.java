@@ -14,14 +14,14 @@ import android.widget.TextView;
 import com.droidrtc.R;
 import com.droidrtc.data.ContactData;
 
-public class ContanctAdapter extends ArrayAdapter<ContactData> {
+public class ContactAdapter extends ArrayAdapter<ContactData> {
 
 	private Activity activity;
 	private List<ContactData> items;
 	private int row;
 	private ContactData contactData;
 
-	public ContanctAdapter(Activity act, int row, List<ContactData> items) {
+	public ContactAdapter(Activity act, int row, List<ContactData> items) {
 		super(act, row, items);
 
 		this.activity = act;
@@ -51,21 +51,20 @@ public class ContanctAdapter extends ArrayAdapter<ContactData> {
 		contactData = items.get(position);
 
 		holder.tvname = (TextView) view.findViewById(R.id.nameID);
-		holder.tvPhoneNo = (TextView) view.findViewById(R.id.phoneNoID);
+		holder.tvPresence = (TextView) view.findViewById(R.id.presenceID);
 
 		if (holder.tvname != null && null != contactData.getName()
 				&& contactData.getName().trim().length() > 0) {
-			holder.tvname.setText(Html.fromHtml(contactData.getName()));
+			holder.tvname.setText(contactData.getName());
 		}
-		if (holder.tvPhoneNo != null && null != contactData.getPhoneNo()
-				&& contactData.getPhoneNo().trim().length() > 0) {
-			holder.tvPhoneNo.setText(Html.fromHtml(contactData.getPhoneNo()));
+		if (holder.tvPresence != null && null != contactData.getPresence()) {
+			holder.tvPresence.setText(contactData.getPresence().toString());
 		}
 		return view;
 	}
 
 	public class ViewHolder {
-		public TextView tvname, tvPhoneNo;
+		public TextView tvname, tvPresence;
 	}
 
 }
