@@ -1,80 +1,77 @@
 package com.droidrtc.fragments;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
 
-import android.database.Cursor;
+import org.jivesoftware.smack.Roster;
+import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.packet.Presence;
+
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.droidrtc.R;
-import com.droidrtc.adapters.ContanctAdapter;
+import com.droidrtc.adapters.ContactAdapter;
 import com.droidrtc.data.ContactData;
+import com.droidrtc.util.Constants;
 
 public class ContactsFragment extends Fragment implements OnItemClickListener{
-	private ListView listView;
-	private List<ContactData> list = new ArrayList<ContactData>();
+	private ListView contactListView;
+	public XMPPConnection connection = Constants.xmppConnection;
+	private ArrayAdapter<ContactData> contactAdapter;
+	private ArrayList<ContactData> contactList;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.contacts, container, false);
-		listView = (ListView)rootView.findViewById(R.id.list);
-		listView.setOnItemClickListener(this);
-
-		Cursor phones = getActivity().getContentResolver().query(
-				ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null,
-				null, null);
-		while (phones.moveToNext()) {
-
-			String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-
-			String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-
-			ContactData contactData = new ContactData();
-			contactData.setName(name);
-			contactData.setPhoneNo(phoneNumber);
-			list.add(contactData);
-
-		}
-		phones.close();
-
-		ContanctAdapter objAdapter = new ContanctAdapter(getActivity(), R.layout.contact_row, list);
-		listView.setAdapter(objAdapter);
-
-		if (null != list && list.size() != 0) {
-			Collections.sort(list, new Comparator<ContactData>() {
-
-				@Override
-				public int compare(ContactData lhs, ContactData rhs) {
-					return lhs.getName().compareTo(rhs.getName());
-				}
-			});
-
-		} else {
-			showToast("No Contacts Found!!!");
-		}
+		contactListView = (ListView)rootView.findViewById(R.id.list);
+		
+		getContacts();
 		return rootView;
 	}
-	private void showToast(String msg) {
-		Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+
+
+	public void getContacts(){
+		Roster roster = connection.getRoster();
+		Collection<RosterEntry> entries = roster.getEntries();
+		ContactData contacts = new ContactData();
+		contactList = new ArrayList<ContactData>();
+		for (RosterEntry entry : entries) {
+
+			Log.d("XMPPChatDemoActivity",  "--------------------------------------");
+			Log.d("XMPPChatDemoActivity", "RosterEntry " + entry);
+			Log.d("XMPPChatDemoActivity", "User: " + entry.getUser());
+			Log.d("XMPPChatDemoActivity", "Name: " + entry.getName());
+			Log.d("XMPPChatDemoActivity", "Status: " + entry.getStatus());
+			Log.d("XMPPChatDemoActivity", "Type: " + entry.getType());
+			Presence entryPresence = roster.getPresence(entry.getUser());
+
+			Log.d("XMPPChatDemoActivity", "Presence Status: "+ entryPresence.getStatus());
+			Log.d("XMPPChatDemoActivity", "Presence Type: " + entryPresence.getType());
+			contacts.setName(entry.getName());
+			contacts.setPresence(entryPresence.getType());
+			contactList.add(contacts);
+			
+		}
+		contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
+		contactListView.setAdapter(contactAdapter);
 	}
 
-	public void onItemClick(AdapterView<?> listview, View v, int position,
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		ContactData bean = (ContactData) listview.getItemAtPosition(position);
-		showCallDialog(bean.getName(), bean.getPhoneNo());
-	}
-
-	private void showCallDialog(String name, final String phoneNo) {
+		// TODO Auto-generated method stub
+		
 	}
 }

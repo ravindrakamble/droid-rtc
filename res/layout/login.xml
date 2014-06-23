@@ -62,6 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dip"
                 android:layout_marginTop="5dip"
+                android:text="viswa"
                 android:singleLine="true" />
             <!-- Password Label -->
 
@@ -77,6 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:password="true"
+                android:text="viswa"
                 android:singleLine="true" />
             <!-- Login button -->
 

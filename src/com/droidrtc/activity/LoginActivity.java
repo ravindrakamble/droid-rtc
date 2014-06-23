@@ -31,6 +31,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 	private ProgressDialog dialog;
 	private boolean loginSuccess = false;
 	private int LOGIN_REQUEST_CODE = 123;
+//	public XMPPConnection connection;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,8 +82,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 			Log.i("ConnectToXmpp", "Connecting to server " + Constants.SERVER_HOST);
 			Log.e("XMPPClient", "userName:" + userName+"Password:"+password);
 			// Create a connection
+			XMPPConnection connection;
 			ConnectionConfiguration connConfig = new ConnectionConfiguration(Constants.SERVER_HOST,(Constants.SERVER_PORT));
-			XMPPConnection connection = new XMPPConnection(connConfig);
+			connection = new XMPPConnection(connConfig);
+			
 
 			try {
 				connection.connect();
@@ -101,6 +104,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				connection.login(userName, password);
 				Log.i("XMPPClient", "Logged in as " + connection.getUser());
 				loginSuccess = true;
+				Constants.xmppConnection = connection;
 				// Set the status to available
 				Presence presence = new Presence(Presence.Type.available);
 				connection.sendPacket(presence);
