@@ -5,7 +5,10 @@ import org.jivesoftware.smack.XMPPConnection;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -93,25 +96,65 @@ ActionBar.TabListener {
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		 switch (item.getItemId())
-	        {
-	        case R.id.logout:
-			logout();
+		switch (item.getItemId())
+		{
+		case R.id.logout:
+			showLogoutAlert();
 			break;
-	        case R.id.action_settings:
-	        	break;
-	        }
+		case R.id.action_settings:
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 	private void logout(){
 		try {
 			if (connection != null) {
 				connection.disconnect();
-				finish();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+	@Override
+	public void onBackPressed() {
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setTitle("Do you want to exit?");
+		alertDialogBuilder
+		.setCancelable(false)
+		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				logout();
+				Intent returnIntent = new Intent();
+				setResult(RESULT_OK,returnIntent);
+				finish();
+			}
+		})
+		.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			}
+		});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+	}
+	public void showLogoutAlert(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setTitle("Do you want to logout?");
+		alertDialogBuilder
+		.setCancelable(false)
+		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				logout();
+				finish();
+			}
+		})
+		.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			}
+		});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+	}
+
 }

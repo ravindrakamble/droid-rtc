@@ -1,7 +1,6 @@
 package com.droidrtc.activity;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
-import org.jivesoftware.smack.SmackAndroid;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Presence;
@@ -43,7 +42,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		login = (Button) findViewById(R.id.loginBtnID);
 		login.setOnClickListener(this);
 
-		SmackAndroid.init(this);
+//		SmackAndroid.init(this);
 	}
 	@Override
 	public void onClick(View v) {
@@ -135,7 +134,10 @@ public class LoginActivity extends Activity implements OnClickListener {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		finish();
+		if(resultCode == RESULT_OK){
+			finish();
+		}
+		
 	}
 	private void showAlert(final String msg){
 		loginSuccess = false;

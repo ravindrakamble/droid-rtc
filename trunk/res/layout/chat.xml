@@ -4,12 +4,31 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
+   <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/form"
+        android:divider="@null"
+        android:layout_alignParentTop="true" >
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/form"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:text="Chat"
-        android:textSize="20dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:ems="10"
+            android:inputType="text" />
+    </RelativeLayout>
 
 </RelativeLayout>
