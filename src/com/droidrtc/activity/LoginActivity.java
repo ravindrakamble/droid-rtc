@@ -21,16 +21,19 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.droidrtc.R;
+import com.droidrtc.connection.ConnectionDetector;
+import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.util.Constants;
 
-public class LoginActivity extends Activity implements OnClickListener {
+public class LoginActivity extends Activity implements OnClickListener,UIUpdator {
 	private EditText userEditText,pwdEditText;
 	private Button login;
 	private String userName,password;
 	private ProgressDialog dialog;
 	private boolean loginSuccess = false;
 	private int LOGIN_REQUEST_CODE = 123;
-//	public XMPPConnection connection;
+	private ConnectionDetector connectionDetector;
+	//	public XMPPConnection connection;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,8 +44,8 @@ public class LoginActivity extends Activity implements OnClickListener {
 		pwdEditText = (EditText) findViewById(R.id.pwdEditID);
 		login = (Button) findViewById(R.id.loginBtnID);
 		login.setOnClickListener(this);
-
-//		SmackAndroid.init(this);
+		connectionDetector = new ConnectionDetector(getApplicationContext());
+		//		SmackAndroid.init(this);
 	}
 	@Override
 	public void onClick(View v) {
@@ -50,7 +53,20 @@ public class LoginActivity extends Activity implements OnClickListener {
 		case R.id.loginBtnID:
 			userName = userEditText.getText().toString();
 			password = pwdEditText.getText().toString();
-			new ConnectToXmpp().execute();
+//						new ConnectToXmpp().execute();
+
+			if(connectionDetector.isConnectedToInternet()){
+				dialog = new ProgressDialog(LoginActivity.this);
+				dialog.setTitle("Signing in...");
+				dialog.setMessage("Please wait...");
+				dialog.setIndeterminate(false);
+				dialog.setCancelable(true);
+				dialog.show();
+				ConnectionManager.getInstance().connect(userName, password, this);	
+			}else{
+				showAlert("Connection Error!!! Please try again");
+			}
+
 			break;
 
 		default:
@@ -84,7 +100,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 			XMPPConnection connection;
 			ConnectionConfiguration connConfig = new ConnectionConfiguration(Constants.SERVER_HOST,(Constants.SERVER_PORT));
 			connection = new XMPPConnection(connConfig);
-			
+
 
 			try {
 				connection.connect();
@@ -126,7 +142,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 				Intent intent = new Intent(LoginActivity.this,MainActivity.class);
 				startActivityForResult(intent, LOGIN_REQUEST_CODE);
 			}
-			
+
 		}
 
 	}
@@ -137,30 +153,69 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if(resultCode == RESULT_OK){
 			finish();
 		}
-		
+
 	}
 	private void showAlert(final String msg){
 		loginSuccess = false;
-		runOnUiThread(new Runnable(){
-			@SuppressWarnings("deprecation")
-			public void run() {
-				AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
-				alertDialog.setTitle("Alert!!!");
-				alertDialog.setMessage(msg);
-				alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-				alertDialog.show();
+
+		AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
+		alertDialog.setTitle("Alert!!!");
+		alertDialog.setMessage(msg);
+		alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,"OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
 			}
 		});
-
+		alertDialog.show();
 	}
+
+
 	protected Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			showAlert(msg.toString());
+			switch(msg.what){
+			case 1:
+				if(dialog != null && dialog.isShowing()){
+					dialog.dismiss();
+				}
+				if(loginSuccess){
+					Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+					startActivityForResult(intent, LOGIN_REQUEST_CODE);
+				}else{
+					showAlert("Login failed");
+				}
+				break;
+			case 2:
+				if(dialog != null && dialog.isShowing()){
+					dialog.dismiss();
+				}
+				if(loginSuccess){
+					Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+					startActivityForResult(intent, LOGIN_REQUEST_CODE);
+				}else{
+					showAlert("Wrong Username or Password");
+				}
+				break;
+			}
+
 		}
-	};  
+	};
+	@Override
+	public void updateUI(int reqCode, Object response) {
+		if(response instanceof Boolean){
+			loginSuccess = (Boolean)response;
+		}
+		Message msg = Message.obtain();
+		msg.what = reqCode;
+		handler.sendMessage(msg);
+
+	}  
+	@Override
+	public boolean isFinishing() {
+		if(dialog != null && dialog.isShowing()){
+			dialog.dismiss();
+		}
+		return super.isFinishing();
+	}
+
 }

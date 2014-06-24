@@ -3,5 +3,6 @@
 
     <color name="blue">#ff2570ba</color>
     <color name="grey">#f7f7f7</color>
+    <color name="seperator_color">#cdcdcd</color>
 
 </resources>
