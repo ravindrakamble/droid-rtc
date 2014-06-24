@@ -9,6 +9,7 @@ import org.jivesoftware.smack.packet.Message;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,24 +26,32 @@ import com.droidrtc.util.Constants;
 public class ChatFragment extends Fragment {
 	private ChatAdapter adapter;
 	private ListView lv;
-	private EditText editText1;
+	private EditText mRecipient;
+	private EditText mSendText;
 	public XMPPConnection connection = Constants.xmppConnection;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.chat, container, false);
-		lv = (ListView) rootView.findViewById(R.id.listView1);
+		lv = (ListView) rootView.findViewById(R.id.chatListId);
 
 		adapter = new ChatAdapter(getActivity(), R.layout.listitem_discuss);
 		lv.setAdapter(adapter);
 
-		editText1 = (EditText) rootView.findViewById(R.id.editText1);
-		editText1.setOnKeyListener(new OnKeyListener() {
+		mSendText = (EditText) rootView.findViewById(R.id.sendTextId);
+		mSendText.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					adapter.add(new OneComment(false, editText1.getText().toString()));
-					editText1.setText("");
+					adapter.add(new OneComment(false, mSendText.getText().toString()));
+					mSendText.setText("");
+					String to = mRecipient.getText().toString();
+					String text = mSendText.getText().toString();
+
+					Log.i("XMPPClient", "Sending text [" + text + "] to [" + to + "]");
+					Message msg = new Message(to, Message.Type.chat);
+					msg.setBody(text);
+					connection.sendPacket(msg);
 					return true;
 				}
 				return false;
@@ -54,28 +63,28 @@ public class ChatFragment extends Fragment {
 		return rootView;
 	}
 	private void addItems() {
-			String msg = "Hello chat";
-			adapter.add(new OneComment(true, msg));
-		}
-	
+		String msg = "Hello chat";
+		adapter.add(new OneComment(true, msg));
+	}
+
 	private void sendMessage(){
 		ChatManager chatmanager = connection.getChatManager();
 		Chat newChat = chatmanager.createChat("abc@gmail.com", new MessageListener() {
-		  // Receiving Messages
-		  public void processMessage(Chat chat, Message message) {
-		    Message outMsg = new Message(message.getBody());
-		    /*try {
+			// Receiving Messages
+			public void processMessage(Chat chat, Message message) {
+				Message outMsg = new Message(message.getBody());
+				/*try {
 		      newChat.sendMessage(outMsg);
 		    } catch (XMPPException e) {
 		      //Error
 		    }*/
-		  }
+			}
 		});
 		try {
-		  //Send String as Message
-		  newChat.sendMessage("How are you?");
+			//Send String as Message
+			newChat.sendMessage("How are you?");
 		} catch (XMPPException e) {
-		  //Error
+			//Error
 		}
 	}
 }

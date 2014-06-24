@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
    <ListView
-        android:id="@+id/listView1"
+        android:id="@+id/chatListId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/form"
@@ -22,7 +22,7 @@
         android:orientation="vertical" >
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/sendTextId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

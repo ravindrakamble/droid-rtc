@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ public class ContactAdapter extends ArrayAdapter<ContactData> {
 		this.activity = act;
 		this.row = row;
 		this.items = items;
-
 	}
 
 	@Override
@@ -55,7 +53,9 @@ public class ContactAdapter extends ArrayAdapter<ContactData> {
 
 		if (holder.tvname != null && null != contactData.getName()
 				&& contactData.getName().trim().length() > 0) {
-			holder.tvname.setText(contactData.getName());
+			String name = contactData.getName().split("\\@")[0];
+
+			holder.tvname.setText(name);
 		}
 		if (holder.tvPresence != null && null != contactData.getPresence()
 				&& contactData.getPresence().toString().trim().length() > 0) {
