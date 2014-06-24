@@ -4,6 +4,7 @@ import org.jivesoftware.smack.packet.Presence.Type;
 
 public class ContactData {
 	private String name;
+	private String fullName;
 	private Type presence;
 	private String status;
 	private String type;

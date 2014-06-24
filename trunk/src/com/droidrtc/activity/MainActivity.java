@@ -12,18 +12,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.DisplayMetrics;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.droidrtc.R;
 import com.droidrtc.adapters.TabsPagerAdapter;
+import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.util.Constants;
 
 public class MainActivity extends FragmentActivity implements
-ActionBar.TabListener {
+ActionBar.TabListener,UIUpdator {
 	public XMPPConnection connection = Constants.xmppConnection;
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
@@ -87,14 +84,14 @@ ActionBar.TabListener {
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 	}
-	@Override
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(true);
 		//		actionBar.setTitle("Contacts");
 		return true;
-	}
+	}*/
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId())
@@ -109,9 +106,10 @@ ActionBar.TabListener {
 	}
 	private void logout(){
 		try {
-			if (connection != null) {
+			/*if (connection != null) {
 				connection.disconnect();
-			}
+			}*/
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -124,7 +122,8 @@ ActionBar.TabListener {
 		.setCancelable(false)
 		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog,int id) {
-				logout();
+//				logout();
+				ConnectionManager.getInstance().logout(MainActivity.this);
 				Intent returnIntent = new Intent();
 				setResult(RESULT_OK,returnIntent);
 				finish();
@@ -156,5 +155,11 @@ ActionBar.TabListener {
 		});
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
+	}
+
+	@Override
+	public void updateUI(int reqCode, Object response) {
+		// TODO Auto-generated method stub
+		
 	}
 }

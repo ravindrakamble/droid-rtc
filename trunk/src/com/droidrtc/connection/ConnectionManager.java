@@ -54,6 +54,12 @@ public class ConnectionManager {
 		pool.execute(contactsTask);
 	}
 
+	public void logout(UIUpdator uiUpdator){
+		this.uiUpdator = uiUpdator;
+		LogoutTask logoutTask = new LogoutTask();
+		pool.execute(logoutTask);
+	}
+
 	private class ConnectionTask implements Runnable{
 		@Override
 		public void run() {
@@ -87,7 +93,7 @@ public class ConnectionManager {
 		public void run() {
 			Roster roster = connection.getRoster();
 			Collection<RosterEntry> entries = roster.getEntries();
-			ContactData contacts = new ContactData();
+			ContactData contacts = null;
 			contactList = new ArrayList<ContactData>();
 			for (RosterEntry entry : entries) {
 
@@ -101,13 +107,24 @@ public class ConnectionManager {
 
 				Log.d("XMPPChatDemoActivity", "Presence Status: "+ entryPresence.getStatus());
 				Log.d("XMPPChatDemoActivity", "Presence Type: " + entryPresence.getType());
-				contacts.setName(entry.getName());
+				contacts = new ContactData();
+				contacts.setName(entry.getUser());
 				contacts.setPresence(entryPresence.getType());
 				contactList.add(contacts);
-				
 			}
 			uiUpdator.updateUI(3, contactList);
 		}
 
+	}
+	private class LogoutTask implements Runnable{
+
+		@Override
+		public void run() {
+			if(connection != null && connection.isConnected()){
+				connection.disconnect();
+			}
+			uiUpdator.updateUI(4, true);
+		}
+		
 	}
 }

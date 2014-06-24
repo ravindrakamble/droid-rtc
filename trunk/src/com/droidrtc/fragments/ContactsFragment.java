@@ -2,7 +2,6 @@ package com.droidrtc.fragments;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
@@ -10,6 +9,8 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Presence;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,8 +38,8 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.contacts, container, false);
 		contactListView = (ListView)rootView.findViewById(R.id.list);
-		
-//		getContacts();
+
+		//		getContacts();
 		ConnectionManager.getInstance().getContacts(this);
 		return rootView;
 	}
@@ -47,7 +48,7 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	public void getContacts(){
 		Roster roster = connection.getRoster();
 		Collection<RosterEntry> entries = roster.getEntries();
-		ContactData contacts = new ContactData();
+		ContactData contacts = null;
 		contactList = new ArrayList<ContactData>();
 		for (RosterEntry entry : entries) {
 
@@ -61,10 +62,10 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 
 			Log.d("XMPPChatDemoActivity", "Presence Status: "+ entryPresence.getStatus());
 			Log.d("XMPPChatDemoActivity", "Presence Type: " + entryPresence.getType());
+			contacts = new ContactData();
 			contacts.setName(entry.getName());
 			contacts.setPresence(entryPresence.getType());
 			contactList.add(contacts);
-			
 		}
 		contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
 		contactListView.setAdapter(contactAdapter);
@@ -75,7 +76,7 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
@@ -84,9 +85,16 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	public void updateUI(int reqCode, Object response) {
 		if(response instanceof Object){
 			contactList = (ArrayList<ContactData>)response;
+			handler.sendEmptyMessage(0);
+		}
+
+	}
+
+	protected Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
 			contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
 			contactListView.setAdapter(contactAdapter);
 		}
-		
-	}
+	};
 }

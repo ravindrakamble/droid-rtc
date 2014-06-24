@@ -24,13 +24,13 @@ public class ChatActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.chat);
 
-		lv = (ListView) findViewById(R.id.listView1);
+		lv = (ListView) findViewById(R.id.chatListId);
 
 		adapter = new ChatAdapter(getApplicationContext(), R.layout.listitem_discuss);
 
 		lv.setAdapter(adapter);
 
-		editText1 = (EditText) findViewById(R.id.editText1);
+		editText1 = (EditText) findViewById(R.id.sendTextId);
 		editText1.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
