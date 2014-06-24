@@ -12,8 +12,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.droidrtc.R;
 import com.droidrtc.adapters.TabsPagerAdapter;
@@ -26,7 +29,7 @@ ActionBar.TabListener {
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	// Tab titles
-	private String[] tabs = { "Contacts", "Chat", "Channels" };
+	private String[] tabs = { "Contacts", "Chat", "Channels", "Settings" };
 
 	@SuppressLint("NewApi")
 	@Override
@@ -43,10 +46,8 @@ ActionBar.TabListener {
 
 		// Adding Tabs
 		for (String tab_name : tabs) {
-			actionBar.addTab(actionBar.newTab().setText(tab_name)
-					.setTabListener(this));
+			actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
 		}
-
 		/**
 		 * on swiping the viewpager make respective tab selected
 		 * */
@@ -156,5 +157,4 @@ ActionBar.TabListener {
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
 	}
-
 }

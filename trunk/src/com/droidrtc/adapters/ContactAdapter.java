@@ -55,10 +55,10 @@ public class ContactAdapter extends ArrayAdapter<ContactData> {
 
 		if (holder.tvname != null && null != contactData.getName()
 				&& contactData.getName().trim().length() > 0) {
-			String name = contactData.getName().split("@")[0];
-			holder.tvname.setText(name);
+			holder.tvname.setText(contactData.getName());
 		}
-		if (holder.tvPresence != null && null != contactData.getPresence()) {
+		if (holder.tvPresence != null && null != contactData.getPresence()
+				&& contactData.getPresence().toString().trim().length() > 0) {
 			holder.tvPresence.setText(contactData.getPresence().toString());
 		}
 		return view;

@@ -21,11 +21,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.droidrtc.R;
+import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.adapters.ContactAdapter;
+import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.data.ContactData;
 import com.droidrtc.util.Constants;
 
-public class ContactsFragment extends Fragment implements OnItemClickListener{
+public class ContactsFragment extends Fragment implements OnItemClickListener,UIUpdator{
 	private ListView contactListView;
 	public XMPPConnection connection = Constants.xmppConnection;
 	private ArrayAdapter<ContactData> contactAdapter;
@@ -36,7 +38,8 @@ public class ContactsFragment extends Fragment implements OnItemClickListener{
 		View rootView = inflater.inflate(R.layout.contacts, container, false);
 		contactListView = (ListView)rootView.findViewById(R.id.list);
 		
-		getContacts();
+//		getContacts();
+		ConnectionManager.getInstance().getContacts(this);
 		return rootView;
 	}
 
@@ -72,6 +75,18 @@ public class ContactsFragment extends Fragment implements OnItemClickListener{
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void updateUI(int reqCode, Object response) {
+		if(response instanceof Object){
+			contactList = (ArrayList<ContactData>)response;
+			contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
+			contactListView.setAdapter(contactAdapter);
+		}
 		
 	}
 }

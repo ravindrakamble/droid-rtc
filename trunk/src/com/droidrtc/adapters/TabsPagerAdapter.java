@@ -4,6 +4,7 @@ package com.droidrtc.adapters;
 import com.droidrtc.fragments.ChannelsFragment;
 import com.droidrtc.fragments.ChatFragment;
 import com.droidrtc.fragments.ContactsFragment;
+import com.droidrtc.fragments.SettingsFragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +29,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 		case 2:
 			// Movies fragment activity
 			return new ChannelsFragment();
+		case 3:
+			// Movies fragment activity
+			return new SettingsFragment();
 		}
 
 		return null;
@@ -36,7 +40,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 	@Override
 	public int getCount() {
 		// get item count - equal to number of tabs
-		return 3;
+		return 4;
 	}
 
 }

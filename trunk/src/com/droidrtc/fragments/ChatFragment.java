@@ -7,20 +7,20 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 
-import com.droidrtc.R;
-import com.droidrtc.adapters.ChatAdapter;
-import com.droidrtc.data.OneComment;
-import com.droidrtc.util.Constants;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.droidrtc.R;
+import com.droidrtc.adapters.ChatAdapter;
+import com.droidrtc.data.OneComment;
+import com.droidrtc.util.Constants;
 
 public class ChatFragment extends Fragment {
 	private ChatAdapter adapter;
@@ -64,11 +64,11 @@ public class ChatFragment extends Fragment {
 		  // Receiving Messages
 		  public void processMessage(Chat chat, Message message) {
 		    Message outMsg = new Message(message.getBody());
-		    try {
+		    /*try {
 		      newChat.sendMessage(outMsg);
 		    } catch (XMPPException e) {
 		      //Error
-		    }
+		    }*/
 		  }
 		});
 		try {
