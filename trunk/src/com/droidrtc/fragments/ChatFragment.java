@@ -1,90 +1,67 @@
 package com.droidrtc.fragments;
 
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.XMPPConnection;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Message;
+import java.util.ArrayList;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.droidrtc.R;
-import com.droidrtc.adapters.ChatAdapter;
-import com.droidrtc.data.OneComment;
-import com.droidrtc.util.Constants;
+import com.droidrtc.activity.ChatActivity;
+import com.droidrtc.activity.UIUpdator;
+import com.droidrtc.adapters.ContactAdapter;
+import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.data.ContactData;
 
-public class ChatFragment extends Fragment {
-	private ChatAdapter adapter;
-	private ListView lv;
-	private EditText mRecipient;
-	private EditText mSendText;
-	public XMPPConnection connection = Constants.xmppConnection;
+public class ChatFragment extends Fragment implements OnItemClickListener,UIUpdator {
+	private ListView contactListView;
+	private ArrayAdapter<ContactData> contactAdapter;
+	private ArrayList<ContactData> contactList;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
-		View rootView = inflater.inflate(R.layout.chat, container, false);
-		lv = (ListView) rootView.findViewById(R.id.chatListId);
-
-		adapter = new ChatAdapter(getActivity(), R.layout.listitem_discuss);
-		lv.setAdapter(adapter);
-
-		mSendText = (EditText) rootView.findViewById(R.id.sendTextId);
-		mSendText.setOnKeyListener(new OnKeyListener() {
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					adapter.add(new OneComment(false, mSendText.getText().toString()));
-					mSendText.setText("");
-					String to = mRecipient.getText().toString();
-					String text = mSendText.getText().toString();
-
-					Log.i("XMPPClient", "Sending text [" + text + "] to [" + to + "]");
-					Message msg = new Message(to, Message.Type.chat);
-					msg.setBody(text);
-					connection.sendPacket(msg);
-					return true;
-				}
-				return false;
-			}
-		});
-
-		//addItems();
-
+		View rootView = inflater.inflate(R.layout.contacts, container, false);
+		contactListView = (ListView)rootView.findViewById(R.id.list);
+		contactListView.setOnItemClickListener(this);
+		ConnectionManager.getInstance().getContacts(this);
 		return rootView;
 	}
-	private void addItems() {
-		String msg = "Hello chat";
-		adapter.add(new OneComment(true, msg));
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+		
+		ContactData contactData = (ContactData) contactListView.getItemAtPosition(position);
+		String name = contactData.getName();
+		Intent intent = new Intent(getActivity(),ChatActivity.class);
+		intent.putExtra("Name", name);
+		startActivity(intent);
+
 	}
 
-	private void sendMessage(){
-		ChatManager chatmanager = connection.getChatManager();
-		Chat newChat = chatmanager.createChat("abc@gmail.com", new MessageListener() {
-			// Receiving Messages
-			public void processMessage(Chat chat, Message message) {
-				Message outMsg = new Message(message.getBody());
-				/*try {
-		      newChat.sendMessage(outMsg);
-		    } catch (XMPPException e) {
-		      //Error
-		    }*/
-			}
-		});
-		try {
-			//Send String as Message
-			newChat.sendMessage("How are you?");
-		} catch (XMPPException e) {
-			//Error
+	@SuppressWarnings("unchecked")
+	@Override
+	public void updateUI(int reqCode, Object response) {
+		if(response instanceof Object){
+			contactList = (ArrayList<ContactData>)response;
+			handler.sendEmptyMessage(0);
 		}
+
 	}
+
+	protected Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
+			contactListView.setAdapter(contactAdapter);
+		}
+	};
 }
