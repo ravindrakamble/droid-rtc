@@ -8,5 +8,6 @@ public class Constants {
 	public static int SERVER_PORT = 5222;
 	public static  XMPPConnection xmppConnection = null;
 	public static final Boolean PRINT_LOGS = true;
+	public static boolean inChatActivity = false;
 	
 }

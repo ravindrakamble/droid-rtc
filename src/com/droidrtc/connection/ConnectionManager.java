@@ -6,24 +6,37 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
+import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.filter.MessageTypeFilter;
+import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.util.StringUtils;
 
+import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
+import android.widget.TabHost;
 
+import com.droidrtc.activity.ChatActivity;
 import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.data.ContactData;
+import com.droidrtc.fragments.ChatFragment;
 import com.droidrtc.util.Constants;
+import com.droidrtc.util.RtcLogs;
 
 public class ConnectionManager {
-
+	String TAG = "ConnectionManager";
 	XMPPConnection connection;
 	private static ConnectionManager connectionManager = new ConnectionManager();
 	String userName;
 	String password;
+	String msg;
+	String recipient;
 	UIUpdator uiUpdator;
 	private final ExecutorService pool;
 	private ArrayList<ContactData> contactList;
@@ -59,6 +72,13 @@ public class ConnectionManager {
 		LogoutTask logoutTask = new LogoutTask();
 		pool.execute(logoutTask);
 	}
+	public void sendMsg(String recipient,String msg, UIUpdator uiUpdator){
+		this.recipient = recipient;
+		this.msg = msg;
+		this.uiUpdator = uiUpdator;
+		SendMsgTask sendMsgTask = new SendMsgTask();
+		pool.execute(sendMsgTask);
+	}
 
 	private class ConnectionTask implements Runnable{
 		@Override
@@ -68,6 +88,7 @@ public class ConnectionManager {
 			try {
 				connection.connect();
 				Log.i("XMPPClient", "[SettingsDialog] Connected to " + connection.getHost());
+				
 			} catch (XMPPException ex) {
 				uiUpdator.updateUI(1, false);
 				Log.e("XMPPClient", "[SettingsDialog] Failed to connect to " + connection.getHost());
@@ -80,14 +101,40 @@ public class ConnectionManager {
 				// Set the status to available
 				Presence presence = new Presence(Presence.Type.available);
 				connection.sendPacket(presence);
+				recieveMessages(connection);
 				uiUpdator.updateUI(1, true);
 			} catch (XMPPException ex) {
 				Log.e("XMPPClient", "[SettingsDialog] Failed to log in as " + userName);
 				uiUpdator.updateUI(2, false);
 			}
 		}
-	}
-
+	} 
+	 public void recieveMessages(XMPPConnection connection) {
+		 if (connection != null) {
+		      // Add a packet listener to get messages sent to us
+		      PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
+		      connection.addPacketListener(new PacketListener() {
+		        @Override
+		        public void processPacket(Packet packet) {
+		          Message message = (Message) packet;
+		          if (message.getBody() != null) {
+		            String sender = StringUtils.parseBareAddress(message.getFrom());
+		            RtcLogs.i("XMPPChatDemoActivity ", " Text Recieved " + message.getBody() + " from " +  sender);
+		            RtcLogs.i(TAG,sender + ":");
+		            RtcLogs.i(TAG,message.getBody());
+		            if(Constants.inChatActivity){
+		            	uiUpdator = ChatActivity.getInstance();
+		            	uiUpdator.updateUI(message.getBody());
+		            }else{
+		            	uiUpdator.updateUI(6, sender,message.getBody());	
+		            }
+		            
+		          }
+		        }
+		      }, filter);
+		    }
+		 
+	 }
 	private class ContactsTask implements Runnable{
 		@Override
 		public void run() {
@@ -127,4 +174,19 @@ public class ConnectionManager {
 		}
 		
 	}
+	private class SendMsgTask implements Runnable{
+
+		@Override
+		
+		public void run() {
+			Message message = new Message(recipient, Message.Type.chat);
+			message.setBody(msg);
+			message.setFrom(userName+"@"+Constants.SERVER_HOST);
+			connection.sendPacket(message);
+			uiUpdator.updateUI(5, true);
+		}
+		
+	}
+	
+	
 }
