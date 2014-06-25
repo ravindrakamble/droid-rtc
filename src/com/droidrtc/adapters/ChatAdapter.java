@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 public class ChatAdapter extends ArrayAdapter<OneComment> {
 
-	private TextView countryName;
+	private TextView chatMsg;
 	private List<OneComment> chat = new ArrayList<OneComment>();
 	private LinearLayout wrapper;
 
@@ -48,16 +48,11 @@ public class ChatAdapter extends ArrayAdapter<OneComment> {
 			LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			row = inflater.inflate(R.layout.listitem_discuss, parent, false);
 		}
-
 		wrapper = (LinearLayout) row.findViewById(R.id.wrapper);
-
 		OneComment coment = getItem(position);
-
-		countryName = (TextView) row.findViewById(R.id.comment);
-
-		countryName.setText(coment.comment);
-
-		countryName.setBackgroundResource(coment.left ? R.drawable.bubble_yellow : R.drawable.bubble_green);
+		chatMsg = (TextView) row.findViewById(R.id.comment);
+		chatMsg.setText(coment.comment);
+		chatMsg.setBackgroundResource(coment.left ? R.drawable.bubble_yellow : R.drawable.bubble_green);
 		wrapper.setGravity(coment.left ? Gravity.LEFT : Gravity.RIGHT);
 
 		return row;

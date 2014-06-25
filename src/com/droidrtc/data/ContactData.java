@@ -15,6 +15,12 @@ public class ContactData {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getFullName() {
+		return fullName;
+	}
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
 	public Type getPresence() {
 		return presence;
 	}

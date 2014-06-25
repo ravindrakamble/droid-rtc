@@ -1,119 +1,67 @@
 package com.droidrtc.activity;
 
-import org.jivesoftware.smack.XMPPConnection;
-
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.view.MenuItem;
+import android.support.v4.app.FragmentTabHost;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 
 import com.droidrtc.R;
-import com.droidrtc.adapters.TabsPagerAdapter;
 import com.droidrtc.connection.ConnectionManager;
-import com.droidrtc.util.Constants;
+import com.droidrtc.fragments.ChannelsFragment;
+import com.droidrtc.fragments.ChatFragment;
+import com.droidrtc.fragments.ContactsFragment;
+import com.droidrtc.fragments.SettingsFragment;
 
-public class MainActivity extends FragmentActivity implements
-ActionBar.TabListener,UIUpdator {
-	public XMPPConnection connection = Constants.xmppConnection;
-	private ViewPager viewPager;
-	private TabsPagerAdapter mAdapter;
-	private ActionBar actionBar;
-	// Tab titles
-	private String[] tabs = { "Contacts", "Chat", "Channels", "Settings" };
+public class MainActivity extends FragmentActivity implements UIUpdator {
+	 private static final String CONTATCS_TAB_TAG = "Contacts";
+	 private static final String CHAT_TAB_TAG 	  = "Chat";
+	 private static final String CHANNELS_TAB_TAG = "Channels";
+	 private static final String SETTINGS_TAB_TAG = "Settings";
+	 
+	 private FragmentTabHost mTabHost;
 
-	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		viewPager = (ViewPager) findViewById(R.id.pager);
-		actionBar = getActionBar();
-		mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
-		viewPager.setAdapter(mAdapter);
-		actionBar.setHomeButtonEnabled(false);
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
-
-		// Adding Tabs
-		for (String tab_name : tabs) {
-			actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
-		}
-		/**
-		 * on swiping the viewpager make respective tab selected
-		 * */
-		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
-			@Override
-			public void onPageSelected(int position) {
-				// on changing the page
-				// make respected tab selected
-				actionBar.setSelectedNavigationItem(position);
-			}
-
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int arg0) {
-			}
-		});
-
-		/*SmackAndroid.init(this);
-		new ConnectToXmpp().execute();*/
+		InitView();
 	}
+	
+	 private void InitView() {
+		  mTabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
+		        mTabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
 
-	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
-	}
 
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		// on tab selected
-		// show respected fragment view
-		viewPager.setCurrentItem(tab.getPosition());
-	}
+		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CONTATCS_TAB_TAG),
+		                R.drawable.tab_indicator_gen,"Contacts",R.drawable.genres_icon),ContactsFragment.class,null);
+		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CHAT_TAB_TAG),
+		                  R.drawable.tab_indicator_gen,"Chat",R.drawable.genres_icon),ChatFragment.class,null);
+		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CHANNELS_TAB_TAG),
+		                  R.drawable.tab_indicator_gen,"Channels",R.drawable.genres_icon),ChannelsFragment.class,null);
+		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(SETTINGS_TAB_TAG),
+		                  R.drawable.tab_indicator_gen,"Settings",R.drawable.genres_icon),SettingsFragment.class,null);
+		      
+		 }
 
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-	}
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		ActionBar actionBar = getActionBar();
-		actionBar.setDisplayShowTitleEnabled(true);
-		//		actionBar.setTitle("Contacts");
-		return true;
-	}*/
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId())
-		{
-		case R.id.logout:
-			showLogoutAlert();
-			break;
-		case R.id.action_settings:
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	private void logout(){
-		try {
-			/*if (connection != null) {
-				connection.disconnect();
-			}*/
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	 private TabSpec setIndicator(Context ctx, TabSpec spec,
+			   int resid, String string, int genresIcon) {
+			      View v = LayoutInflater.from(ctx).inflate(R.layout.tab_item, null);
+			      v.setBackgroundResource(resid);
+			      TextView tv = (TextView)v.findViewById(R.id.txt_tabtxt);
+			      ImageView img = (ImageView)v.findViewById(R.id.img_tabtxt);
+			     
+			      tv.setText(string);
+			      img.setBackgroundResource(genresIcon);
+			      return spec.setIndicator(v);
+			 }
 	@Override
 	public void onBackPressed() {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -122,7 +70,6 @@ ActionBar.TabListener,UIUpdator {
 		.setCancelable(false)
 		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog,int id) {
-//				logout();
 				ConnectionManager.getInstance().logout(MainActivity.this);
 				Intent returnIntent = new Intent();
 				setResult(RESULT_OK,returnIntent);
@@ -137,26 +84,13 @@ ActionBar.TabListener,UIUpdator {
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
 	}
-	public void showLogoutAlert(){
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		alertDialogBuilder.setTitle("Do you want to logout?");
-		alertDialogBuilder
-		.setCancelable(false)
-		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
-				logout();
-				finish();
-			}
-		})
-		.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
-				dialog.cancel();
-			}
-		});
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
-	}
-
+	
+	@Override
+	 protected void onDestroy() {
+	  // TODO Auto-generated method stub
+	  super.onDestroy();
+	 
+	 }
 	@Override
 	public void updateUI(int reqCode, Object response) {
 		// TODO Auto-generated method stub
