@@ -21,11 +21,22 @@ import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.adapters.ContactAdapter;
 import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.data.ContactData;
+import com.droidrtc.util.RtcLogs;
 
 public class ChatFragment extends Fragment implements OnItemClickListener,UIUpdator {
+	private String TAG = "ChatFragment";
 	private ListView contactListView;
 	private ArrayAdapter<ContactData> contactAdapter;
 	private ArrayList<ContactData> contactList;
+	private static ChatFragment chatFragment = new ChatFragment();
+	public static ChatFragment getInstance(){
+		if (chatFragment == null)
+		{
+			chatFragment = new ChatFragment();
+		}
+		return chatFragment;
+
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -64,4 +75,19 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 			contactListView.setAdapter(contactAdapter);
 		}
 	};
+	@Override
+	public void updateUI(int reqCode, String sender, String message) {
+		RtcLogs.e(TAG, "Sender:"+sender+" Message:"+message);
+		Intent intent = new Intent(getActivity(),ChatActivity.class);
+		intent.putExtra("Name", sender);
+		intent.putExtra("Message", message);
+		startActivity(intent);
+		
+	}
+
+	@Override
+	public void updateUI(String message) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -64,5 +64,15 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 		}
 
 	}
+	@Override
+	public void updateUI(int reqCode, String sender, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateUI(String message) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

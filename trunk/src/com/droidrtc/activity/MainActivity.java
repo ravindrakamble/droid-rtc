@@ -19,6 +19,7 @@ import com.droidrtc.fragments.ChannelsFragment;
 import com.droidrtc.fragments.ChatFragment;
 import com.droidrtc.fragments.ContactsFragment;
 import com.droidrtc.fragments.SettingsFragment;
+import com.droidrtc.util.Constants;
 
 public class MainActivity extends FragmentActivity implements UIUpdator {
 	 private static final String CONTATCS_TAB_TAG = "Contacts";
@@ -41,13 +42,13 @@ public class MainActivity extends FragmentActivity implements UIUpdator {
 
 
 		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CONTATCS_TAB_TAG),
-		                R.drawable.tab_indicator_gen,"Contacts",R.drawable.genres_icon),ContactsFragment.class,null);
+		                R.drawable.tab_indicator_gen,"Contacts",R.drawable.contacts),ContactsFragment.class,null);
 		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CHAT_TAB_TAG),
-		                  R.drawable.tab_indicator_gen,"Chat",R.drawable.genres_icon),ChatFragment.class,null);
+		                  R.drawable.tab_indicator_gen,"Chat",R.drawable.chat),ChatFragment.class,null);
 		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(CHANNELS_TAB_TAG),
-		                  R.drawable.tab_indicator_gen,"Channels",R.drawable.genres_icon),ChannelsFragment.class,null);
+		                  R.drawable.tab_indicator_gen,"Channels",R.drawable.channels),ChannelsFragment.class,null);
 		        mTabHost.addTab(setIndicator(MainActivity.this,mTabHost.newTabSpec(SETTINGS_TAB_TAG),
-		                  R.drawable.tab_indicator_gen,"Settings",R.drawable.genres_icon),SettingsFragment.class,null);
+		                  R.drawable.tab_indicator_gen,"Settings",R.drawable.settings),SettingsFragment.class,null);
 		      
 		 }
 
@@ -86,6 +87,11 @@ public class MainActivity extends FragmentActivity implements UIUpdator {
 	}
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+		Constants.inChatActivity = false;
+	}
+	@Override
 	 protected void onDestroy() {
 	  // TODO Auto-generated method stub
 	  super.onDestroy();
@@ -93,6 +99,18 @@ public class MainActivity extends FragmentActivity implements UIUpdator {
 	 }
 	@Override
 	public void updateUI(int reqCode, Object response) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateUI(int reqCode, String sender, String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateUI(String message) {
 		// TODO Auto-generated method stub
 		
 	}
