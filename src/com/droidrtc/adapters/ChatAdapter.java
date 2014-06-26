@@ -3,10 +3,6 @@ package com.droidrtc.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.droidrtc.R;
-import com.droidrtc.data.OneComment;
-
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.droidrtc.R;
+import com.droidrtc.data.OneComment;
+import com.droidrtc.util.Fonts;
 
 public class ChatAdapter extends ArrayAdapter<OneComment> {
 
@@ -52,6 +52,7 @@ public class ChatAdapter extends ArrayAdapter<OneComment> {
 		OneComment coment = getItem(position);
 		chatMsg = (TextView) row.findViewById(R.id.comment);
 		chatMsg.setText(coment.comment);
+		chatMsg.setTypeface(Fonts.BOOK_ANTIQUA);
 		chatMsg.setBackgroundResource(coment.left ? R.drawable.bubble_yellow : R.drawable.bubble_green);
 		wrapper.setGravity(coment.left ? Gravity.LEFT : Gravity.RIGHT);
 
