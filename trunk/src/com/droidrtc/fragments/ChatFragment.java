@@ -27,16 +27,7 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 	private String TAG = "ChatFragment";
 	private ListView contactListView;
 	private ArrayAdapter<ContactData> contactAdapter;
-	private ArrayList<ContactData> contactList;
-	private static ChatFragment chatFragment = new ChatFragment();
-	public static ChatFragment getInstance(){
-		if (chatFragment == null)
-		{
-			chatFragment = new ChatFragment();
-		}
-		return chatFragment;
-
-	}
+	private ArrayList<ContactData> contactList;	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

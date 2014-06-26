@@ -9,19 +9,24 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.droidrtc.R;
 import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.util.Fonts;
 
 public class SettingsFragment extends Fragment implements OnClickListener,UIUpdator {
 	private RelativeLayout logout;
+	TextView logoutTextView;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.settings, container, false);
 		logout = (RelativeLayout)rootView.findViewById(R.id.logoutLayoutID);
+		logoutTextView = (TextView)rootView.findViewById(R.id.logoutID);
+		logoutTextView.setTypeface(Fonts.BOOK_ANTIQUA);
 		logout.setOnClickListener(this);
 		return rootView;
 	}

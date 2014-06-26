@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.droidrtc.R;
 import com.droidrtc.data.ContactData;
+import com.droidrtc.util.Fonts;
 
 public class ContactAdapter extends ArrayAdapter<ContactData> {
 
@@ -49,7 +50,9 @@ public class ContactAdapter extends ArrayAdapter<ContactData> {
 		contactData = items.get(position);
 
 		holder.tvname = (TextView) view.findViewById(R.id.nameID);
+		holder.tvname.setTypeface(Fonts.BOOK_ANTIQUA);
 		holder.tvPresence = (TextView) view.findViewById(R.id.presenceID);
+		holder.tvPresence.setTypeface(Fonts.BOOK_ANTIQUA);
 
 		if (holder.tvname != null && null != contactData.getName()
 				&& contactData.getName().trim().length() > 0) {

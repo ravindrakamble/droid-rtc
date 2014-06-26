@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFFFFF" >
+    android:background="@color/LIGHT_GREEN" >
 
     <RelativeLayout
         android:id="@+id/logoutLayoutID"
@@ -26,14 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
-            android:src="@drawable/right_arrow" />
+            
+            android:src="@drawable/ic_logout" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_below="@+id/logoutID"
-            android:layout_marginBottom="5dp"
-            android:background="@color/seperator_color" />
     </RelativeLayout>
 
 </RelativeLayout>

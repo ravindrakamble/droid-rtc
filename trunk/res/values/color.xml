@@ -2,7 +2,13 @@
 <resources>
 
     <color name="blue">#ff2570ba</color>
-    <color name="grey">#f7f7f7</color>
+    <color name="grey">#707070 </color>
     <color name="seperator_color">#cdcdcd</color>
+    <color name="RED">#FE2E2E</color>
+    <color name="LIGHT_GREEN">#69CFA0</color>
+    <color name="HOLO_BLUE">#058ebc</color>
+    <color name="LIGHT_GRAY">#D1CECE</color>
+    <color name="BLACK">#000000</color>
+    <color name="WHITE">#FFFFFF</color>
 
 </resources>

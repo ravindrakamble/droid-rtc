@@ -5,17 +5,20 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.droidrtc.R;
 import com.droidrtc.connection.ConnectionDetector;
 import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.util.Fonts;
 
 public class LoginActivity extends Activity implements OnClickListener,UIUpdator {
 	private EditText userEditText,pwdEditText;
@@ -29,11 +32,15 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 
 		userEditText = (EditText) findViewById(R.id.userEditID);
 		pwdEditText = (EditText) findViewById(R.id.pwdEditID);
 		login = (Button) findViewById(R.id.loginBtnID);
+		userEditText.setTypeface(Fonts.BOOK_ANTIQUA);
+		pwdEditText.setTypeface(Fonts.BOOK_ANTIQUA);
+		login.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
 		login.setOnClickListener(this);
 		connectionDetector = new ConnectionDetector(getApplicationContext());
 	}
