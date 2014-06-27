@@ -19,6 +19,7 @@ import com.droidrtc.R;
 import com.droidrtc.connection.ConnectionDetector;
 import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.util.Fonts;
+import com.droidrtc.util.ProgressWheel;
 
 public class LoginActivity extends Activity implements OnClickListener,UIUpdator {
 	private EditText userEditText,pwdEditText;
@@ -28,13 +29,15 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	private boolean loginSuccess = false;
 	private int LOGIN_REQUEST_CODE = 123;
 	private ConnectionDetector connectionDetector;
-
+	private ProgressWheel pw;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
 
+		pw = (ProgressWheel) findViewById(R.id.progressWheel);
 		userEditText = (EditText) findViewById(R.id.userEditID);
 		pwdEditText = (EditText) findViewById(R.id.pwdEditID);
 		login = (Button) findViewById(R.id.loginBtnID);
@@ -52,12 +55,20 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 			password = pwdEditText.getText().toString();
 
 			if(connectionDetector.isConnectedToInternet()){
-				dialog = new ProgressDialog(LoginActivity.this);
+				/*dialog = new ProgressDialog(LoginActivity.this);
 				dialog.setTitle("Signing in...");
 				dialog.setMessage("Please wait...");
 				dialog.setIndeterminate(false);
 				dialog.setCancelable(true);
-				dialog.show();
+				dialog.show();*/
+				if(!pw.isShown()){
+					pw.setVisibility(View.VISIBLE);
+				}
+				userEditText.setAlpha(.2f);
+				pwdEditText.setAlpha(.2f);
+				login.setAlpha(.2f);
+				pw.spin();
+				pw.setText("Logging in...");
 				ConnectionManager.getInstance().connect(userName, password, this);	
 			}else{
 				showAlert("Connection Error!!! Please try again");
@@ -102,8 +113,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 					dialog.dismiss();
 				}
 				if(loginSuccess){
-					Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-					startActivityForResult(intent, LOGIN_REQUEST_CODE);
+					openMainActivity();
 				}else{
 					showAlert("Login failed");
 				}
@@ -113,8 +123,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 					dialog.dismiss();
 				}
 				if(loginSuccess){
-					Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-					startActivityForResult(intent, LOGIN_REQUEST_CODE);
+					openMainActivity();
 				}else{
 					showAlert("Wrong Username or Password");
 				}
@@ -123,6 +132,18 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 
 		}
 	};
+	private void openMainActivity(){
+		if(pw.isShown()){
+			pw.setVisibility(View.GONE);
+			userEditText.setAlpha(1f);
+			pwdEditText.setAlpha(1f);
+			login.setAlpha(1f);
+		}
+		pw.stopSpinning();
+		pw.setVisibility(View.GONE);
+		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+		startActivityForResult(intent, LOGIN_REQUEST_CODE);
+	}
 	@Override
 	public void updateUI(int reqCode, Object response) {
 		if(response instanceof Boolean){

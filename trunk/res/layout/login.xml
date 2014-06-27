@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fillViewport="true" 
     android:background="@color/LIGHT_GREEN">
 
+    
     <EditText
         android:id="@+id/userEditID"
         android:layout_width="fill_parent"
@@ -51,5 +53,25 @@
         android:textStyle="bold"
         android:textSize="25sp"
         android:background="@drawable/edit_text_border" />
+     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal" >
+
+        <com.droidrtc.util.ProgressWheel
+            android:id="@+id/progressWheel"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            ProgressWheel:barColor="@color/LIGHT_GREEN"
+            ProgressWheel:barLength="40dp"
+            ProgressWheel:barWidth="20dp"
+            ProgressWheel:rimColor="@android:color/white"
+            ProgressWheel:rimWidth="25dp"
+            ProgressWheel:spinSpeed="3dp"
+            ProgressWheel:textColor="#222222"
+            ProgressWheel:textSize="14sp" 
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </RelativeLayout>
