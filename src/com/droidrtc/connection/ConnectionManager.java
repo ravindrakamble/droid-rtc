@@ -21,11 +21,14 @@ import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.util.StringUtils;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.data.ContactData;
 import com.droidrtc.util.Constants;
+import com.droidrtc.util.MyApplication;
 import com.droidrtc.util.RtcLogs;
 
 public class ConnectionManager {
@@ -127,6 +130,7 @@ public class ConnectionManager {
 						RtcLogs.i(TAG,sender + ":");
 						RtcLogs.i(TAG,message.getBody());
 						uiUpdator.updateUI(6, sender,message.getBody());
+						sendBroadcastMessage(sender,message.getBody());
 					}
 				}
 			}, filter);
@@ -187,6 +191,12 @@ public class ConnectionManager {
 		}
 
 	}
-
+	private void sendBroadcastMessage(String from,String msg) {
+		  Intent intent = new Intent("my-msg");
+		  // add data
+		  intent.putExtra("FROM", from);
+		  intent.putExtra("MESSAGE", msg);
+		  LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
+		} 
 
 }

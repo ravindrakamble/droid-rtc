@@ -1,8 +1,12 @@
 package com.droidrtc.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -67,7 +71,26 @@ public class ChatActivity extends Activity implements UIUpdator{
 	protected void onResume() {
 		super.onResume();
 		Constants.inChatActivity = true;
+		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter("my-msg"));
 	}
+	@Override
+	protected void onPause() {
+	  // Unregister since the activity is not visible
+	  LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+	  super.onPause();
+	} 
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		  @Override
+		  public void onReceive(Context context, Intent intent) {
+		    // Extract data included in the Intent
+		    String message = intent.getStringExtra("MESSAGE");
+		    String from = intent.getStringExtra("FROM");
+		    RtcLogs.d("receiver", "Got message: " + message+";From:"+from);
+		    adapter.add(new OneComment(true, message));
+			adapter.notifyDataSetChanged();
+//			lv.setAdapter(adapter);
+		  }
+		};
 	@Override
 	public void updateUI(int reqCode, Object response) {
 		// TODO Auto-generated method stub
@@ -94,5 +117,13 @@ public class ChatActivity extends Activity implements UIUpdator{
 		}));
 
 	}
+	public class MyMessageReceiver extends BroadcastReceiver {
+
+		@Override
+		  public void onReceive(Context context, Intent intent) {
+		    Bundle extras = intent.getExtras();
+		    RtcLogs.i(TAG, message);
+		  }
+		} 
 
 }
