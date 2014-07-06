@@ -1,5 +1,8 @@
 package com.droidrtc.activity;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,8 +12,8 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnKeyListener;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -18,17 +21,21 @@ import android.widget.Toast;
 import com.droidrtc.R;
 import com.droidrtc.adapters.ChatAdapter;
 import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.data.ChatData;
 import com.droidrtc.data.OneComment;
-import com.droidrtc.util.Constants;
+import com.droidrtc.database.DatabaseHelper;
 import com.droidrtc.util.RtcLogs;
 
 public class ChatActivity extends Activity implements UIUpdator{
 	private String TAG = "ChatActivity";
 	private ChatAdapter adapter;
 	private ListView lv;
+	public ArrayList<ChatData> chatlist;
 	private String recipient,message;
 	private EditText mSendText;
 	private String text;		
+	public DatabaseHelper chatDB;
+	public Date date;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,40 +44,67 @@ public class ChatActivity extends Activity implements UIUpdator{
 
 		Intent intent = getIntent();
 		recipient = intent.getStringExtra("Name");
-
-		try {
-			setTitle(recipient);
-			message = intent.getStringExtra("Message");
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		chatDB = new DatabaseHelper(this);
+		date = new Date();
+		adapter = new ChatAdapter(this, R.layout.listitem_discuss);
 		
 		lv = (ListView) findViewById(R.id.chatListId);
-		adapter = new ChatAdapter(this, R.layout.listitem_discuss);
-		lv.setAdapter(adapter);
-		if(message != null){
-			adapter.add(new OneComment(true, message));
-		}
 		mSendText = (EditText) findViewById(R.id.sendTextId);
 		mSendText.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					adapter.add(new OneComment(false, mSendText.getText().toString()));					
+					adapter.add(new OneComment(false, null, mSendText.getText().toString()));	
+					
 					text = mSendText.getText().toString();
 					mSendText.setText("");
 					Toast.makeText(ChatActivity.this, recipient, Toast.LENGTH_SHORT).show();
 					RtcLogs.i(TAG, "Sending text [" + text + "] to [" + recipient + "]");
+					ChatData tmpChat = new ChatData();
+					tmpChat.setDirection(0);
+					String tmpTo = recipient.split("\\@")[0];
+					tmpChat.setContactName(tmpTo);
+					tmpChat.setMessage(text);
+					tmpChat.setDate(date.getTime());
+					chatDB.insertChat(tmpChat);
 					ConnectionManager.getInstance().sendMsg(recipient, text,ChatActivity.this);
+					RtcLogs.e(TAG, "************************");
+					RtcLogs.e(TAG, "sent [" + text + "] to [" + recipient + "]");
+					RtcLogs.e(TAG, "************************");
 					return true;
 				}
 				return false;
 			}
 		});
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Constants.inChatActivity = true;
+		
+		try {
+			chatDB.exportDB();
+			String tmpTo = recipient.split("\\@")[0];			
+			chatlist = chatDB.getChatHistory(tmpTo);
+			if(chatlist != null){
+				for(int index = 0; index < chatlist.size(); index++ ){
+					ChatData tmpchat = chatlist.get(index);
+					message = tmpchat.getMessage();
+					RtcLogs.e(TAG, "************************");
+					RtcLogs.e(TAG, "read [" + message + "] with [" + recipient + "] direction [" + tmpchat.getDirection() + "]");
+					RtcLogs.e(TAG, "************************");
+					if(message != null) {
+						if(tmpchat.getDirection() > 0){
+							adapter.add(new OneComment(true, message, null));	
+						}else{
+							adapter.add(new OneComment(false, null, message));	
+						}
+					}
+				}
+			}
+			lv.setAdapter(adapter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter("my-msg"));
 	}
 	@Override
@@ -82,13 +116,21 @@ public class ChatActivity extends Activity implements UIUpdator{
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		  @Override
 		  public void onReceive(Context context, Intent intent) {
-		    // Extract data included in the Intent
 		    String message = intent.getStringExtra("MESSAGE");
 		    String from = intent.getStringExtra("FROM");
 		    RtcLogs.d("receiver", "Got message: " + message+";From:"+from);
-		    adapter.add(new OneComment(true, message));
+		    adapter.add(new OneComment(true, message, null));
 			adapter.notifyDataSetChanged();
-//			lv.setAdapter(adapter);
+			ChatData tmpChat = new ChatData();
+			tmpChat.setDirection(1);
+			String tmpTo = from.split("\\@")[0];
+			tmpChat.setContactName(tmpTo);			
+			tmpChat.setMessage(message);
+			tmpChat.setDate(date.getTime());
+			chatDB.insertChat(tmpChat);
+			RtcLogs.e(TAG, "************************");
+			RtcLogs.e(TAG, "recvd [" + message + "] from [" + from + "]");
+			RtcLogs.e(TAG, "************************");
 		  }
 		};
 	@Override
@@ -102,26 +144,14 @@ public class ChatActivity extends Activity implements UIUpdator{
 	}
 	@Override
 	public void updateUI(String chatMsg) {
-		message = chatMsg;
-		RtcLogs.e(TAG, message+" Adapter"+adapter);
-		updateChat();
-
-	}
-	private void updateChat() {
-		runOnUiThread (new Thread(new Runnable() { 
-			public void run() {
-				adapter.add(new OneComment(true, message));
-				adapter.notifyDataSetChanged();
-				lv.setAdapter(adapter);
-			}
-		}));
 
 	}
 	public class MyMessageReceiver extends BroadcastReceiver {
 
 		@Override
 		  public void onReceive(Context context, Intent intent) {
-		    Bundle extras = intent.getExtras();
+		    @SuppressWarnings("unused")
+			Bundle extras = intent.getExtras();
 		    RtcLogs.i(TAG, message);
 		  }
 		} 

@@ -1,22 +1,23 @@
 package com.droidrtc.activity;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTabHost;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.TextView;
 
 import com.droidrtc.R;
-import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.fragments.ChannelsFragment;
 import com.droidrtc.fragments.ChatFragment;
 import com.droidrtc.fragments.ContactsFragment;
@@ -32,6 +33,7 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 	private FragmentTabHost mTabHost;	
 	@SuppressWarnings("unused")
 	private String TAG = "MainActivity";
+	final Dialog dialog = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,25 +73,7 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 	}
 	@Override
 	public void onBackPressed() {
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		alertDialogBuilder.setTitle("Do you want to exit?");
-		alertDialogBuilder
-		.setCancelable(false)
-		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
-				ConnectionManager.getInstance().logout(MainActivity.this);
-				Intent returnIntent = new Intent();
-				setResult(RESULT_OK,returnIntent);
-				finish();
-			}
-		})
-		.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
-				dialog.cancel();
-			}
-		});
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
+		showCustomAlert();
 	}
 
 	@Override
@@ -119,19 +103,57 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 		// TODO Auto-generated method stub
 
 	}
-
+	private void showCustomAlert(){
+					final Dialog dialog = new Dialog(this);
+					
+					dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+					dialog.setContentView(R.layout.custom_alert);
+					TextView alertText = (TextView)dialog.findViewById(R.id.alertTextID);
+					alertText.setText("Do you want to exit?");
+					alertText.setTypeface(Fonts.BOOK_ANTIQUA);
+					Button okButton = (Button) dialog.findViewById(R.id.okBtnID);
+					okButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+					Button cancelButton = (Button)dialog.findViewById(R.id.cancelBtnID);
+					cancelButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+					okButton.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Intent returnIntent = new Intent();
+							setResult(RESULT_OK,returnIntent);
+							finish();
+						}
+					});
+					cancelButton.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							dialog.cancel();
+						}
+					});
+		 
+					dialog.show();
+			
+	}
 	@Override
 	public void onTabChanged(String tabId) {
 		int index = mTabHost.getCurrentTab();
 		for(int tabIndex  = 0; tabIndex  < mTabHost.getTabWidget().getTabCount(); tabIndex ++) {
 			if(index == tabIndex ){
 				TextView tv = (TextView) mTabHost.getTabWidget().getChildTabViewAt(tabIndex ).findViewById(R.id.txt_tabtxt);				
-		        tv.setTextColor(R.color.BLACK);
+		        tv.setTextColor(-16777216);
 			}
 			else {
 				TextView tv = (TextView) mTabHost.getTabWidget().getChildTabViewAt(tabIndex ).findViewById(R.id.txt_tabtxt);			
 		        tv.setTextColor(-1);
 			}
 		}
+	}
+	@Override
+	public boolean isFinishing() {
+		super.isFinishing();
+			if(dialog != null){
+				dialog.dismiss();
+			}
+			return false;
 	}
 }

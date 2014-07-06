@@ -20,7 +20,8 @@ import com.droidrtc.util.Fonts;
 
 public class ChatAdapter extends ArrayAdapter<OneComment> {
 
-	private TextView chatMsg;
+	private TextView recvdMsg;
+	private TextView sentMsg;
 	private List<OneComment> chat = new ArrayList<OneComment>();
 	private LinearLayout wrapper;
 
@@ -49,12 +50,23 @@ public class ChatAdapter extends ArrayAdapter<OneComment> {
 			row = inflater.inflate(R.layout.listitem_discuss, parent, false);
 		}
 		wrapper = (LinearLayout) row.findViewById(R.id.wrapper);
-		OneComment coment = getItem(position);
-		chatMsg = (TextView) row.findViewById(R.id.comment);
-		chatMsg.setText(coment.comment);
-		chatMsg.setTypeface(Fonts.BOOK_ANTIQUA);
-		chatMsg.setBackgroundResource(coment.left ? R.drawable.bubble_yellow : R.drawable.bubble_green);
-		wrapper.setGravity(coment.left ? Gravity.LEFT : Gravity.RIGHT);
+		OneComment comment = getItem(position);
+		recvdMsg = (TextView) row.findViewById(R.id.leftCommentID);
+		if(comment.leftComment != null){
+			recvdMsg.setVisibility(View.VISIBLE);
+			recvdMsg.setText(comment.leftComment);
+		}else{
+			recvdMsg.setVisibility(View.GONE);
+		}
+		recvdMsg.setTypeface(Fonts.BOOK_ANTIQUA);
+		sentMsg = (TextView) row.findViewById(R.id.rightCommentID);
+		if(comment.rightComment != null){
+			sentMsg.setVisibility(View.VISIBLE);
+			sentMsg.setText(comment.rightComment);
+		}else{
+			sentMsg.setVisibility(View.GONE);
+		}
+		sentMsg.setTypeface(Fonts.BOOK_ANTIQUA);
 
 		return row;
 	}

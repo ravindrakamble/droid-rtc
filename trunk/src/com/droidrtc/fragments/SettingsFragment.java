@@ -1,13 +1,15 @@
 package com.droidrtc.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.app.Dialog;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,22 +44,31 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 		}		
 	}
 	public void showLogoutAlert(){
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-		alertDialogBuilder.setTitle("Do you want to logout?");
-		alertDialogBuilder
-		.setCancelable(false)
-		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
+		final Dialog dialog = new Dialog(getActivity());
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(R.layout.custom_alert);
+		TextView alertText = (TextView)dialog.findViewById(R.id.alertTextID);
+		alertText.setText("Do you want to logout?");
+		alertText.setTypeface(Fonts.BOOK_ANTIQUA);
+		Button okButton = (Button) dialog.findViewById(R.id.okBtnID);
+		okButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+		Button cancelButton = (Button)dialog.findViewById(R.id.cancelBtnID);
+		cancelButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+		okButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				logout();
 			}
-		})
-		.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog,int id) {
+		});
+		cancelButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
 				dialog.cancel();
 			}
 		});
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
+
+		dialog.show();
 	}
 	private void logout(){
 		ConnectionManager.getInstance().logout(this);

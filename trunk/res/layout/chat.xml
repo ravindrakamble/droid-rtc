@@ -4,13 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-   <ListView
+    <ListView
         android:id="@+id/chatListId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/form"
+        android:layout_alignParentTop="true"
         android:divider="@null"
-        android:layout_alignParentTop="true" >
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" >
     </ListView>
 
     <RelativeLayout
