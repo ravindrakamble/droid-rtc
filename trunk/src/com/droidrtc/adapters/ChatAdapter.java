@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +57,7 @@ public class ChatAdapter extends ArrayAdapter<OneComment> {
 		}else{
 			recvdMsg.setVisibility(View.GONE);
 		}
-		recvdMsg.setTypeface(Fonts.BOOK_ANTIQUA);
+		recvdMsg.setTypeface(Fonts.THROW_HANDS);
 		sentMsg = (TextView) row.findViewById(R.id.rightCommentID);
 		if(comment.rightComment != null){
 			sentMsg.setVisibility(View.VISIBLE);
@@ -66,7 +65,7 @@ public class ChatAdapter extends ArrayAdapter<OneComment> {
 		}else{
 			sentMsg.setVisibility(View.GONE);
 		}
-		sentMsg.setTypeface(Fonts.BOOK_ANTIQUA);
+		sentMsg.setTypeface(Fonts.THROW_HANDS);
 
 		return row;
 	}
