@@ -70,7 +70,7 @@
             ProgressWheel:rimWidth="25dp"
             ProgressWheel:spinSpeed="3dp"
             ProgressWheel:textColor="#222222"
-            ProgressWheel:textSize="14sp" 
+            ProgressWheel:textSize="20sp" 
             android:visibility="gone"/>
     </LinearLayout>
 

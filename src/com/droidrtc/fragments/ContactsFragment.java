@@ -1,6 +1,9 @@
 package com.droidrtc.fragments;
 
 import java.util.ArrayList;
+
+import org.jivesoftware.smack.XMPPConnection;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +24,7 @@ import com.droidrtc.data.ContactData;
 
 public class ContactsFragment extends Fragment implements OnItemClickListener,UIUpdator{
 	private ListView contactListView;
+	XMPPConnection connection;
 	private ArrayAdapter<ContactData> contactAdapter;
 	private ArrayList<ContactData> contactList;
 	@Override
@@ -60,12 +64,13 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	@Override
 	public void updateUI(int reqCode, String sender, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void updateUI(String message) {
 		// TODO Auto-generated method stub
-		
-	}
+
+	}	
+
 }

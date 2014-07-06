@@ -2,12 +2,14 @@ package com.droidrtc.data;
 
 public class OneComment {
 	public boolean left;
-	public String comment;
+	public String leftComment;
+	public String rightComment;
 
-	public OneComment(boolean left, String comment) {
+	public OneComment(boolean left, String leftComment, String rightComment) {
 		super();
 		this.left = left;
-		this.comment = comment;
+		this.leftComment = leftComment;
+		this.rightComment = rightComment;
 	}
 
 }

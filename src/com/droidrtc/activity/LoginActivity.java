@@ -1,5 +1,7 @@
 package com.droidrtc.activity;
 
+import org.jivesoftware.smack.SmackAndroid;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -30,7 +32,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	private int LOGIN_REQUEST_CODE = 123;
 	private ConnectionDetector connectionDetector;
 	private ProgressWheel pw;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		setContentView(R.layout.login);
 
 		pw = (ProgressWheel) findViewById(R.id.progressWheel);
+		pw.setVisibility(View.GONE);
 		userEditText = (EditText) findViewById(R.id.userEditID);
 		pwdEditText = (EditText) findViewById(R.id.pwdEditID);
 		login = (Button) findViewById(R.id.loginBtnID);
@@ -64,6 +67,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 				if(!pw.isShown()){
 					pw.setVisibility(View.VISIBLE);
 				}
+				SmackAndroid.init(this);
 				userEditText.setAlpha(.2f);
 				pwdEditText.setAlpha(.2f);
 				login.setAlpha(.2f);
@@ -102,16 +106,27 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		});
 		alertDialog.show();
 	}
-
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if( pw != null){
+			pw.stopSpinning();
+			pw.setVisibility(View.GONE);
+		}
+		
+		userEditText.setAlpha(1f);
+		pwdEditText.setAlpha(1f);
+		login.setAlpha(1f);
+	}
 
 	protected Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case 1:
-				if(dialog != null && dialog.isShowing()){
-					dialog.dismiss();
-				}
+
 				if(loginSuccess){
 					openMainActivity();
 				}else{
@@ -119,9 +134,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 				}
 				break;
 			case 2:
-				if(dialog != null && dialog.isShowing()){
-					dialog.dismiss();
-				}
+
 				if(loginSuccess){
 					openMainActivity();
 				}else{
@@ -133,16 +146,11 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		}
 	};
 	private void openMainActivity(){
-		if(pw.isShown()){
-			pw.setVisibility(View.GONE);
-			userEditText.setAlpha(1f);
-			pwdEditText.setAlpha(1f);
-			login.setAlpha(1f);
-		}
-		pw.stopSpinning();
-		pw.setVisibility(View.GONE);
+		
 		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
 		startActivityForResult(intent, LOGIN_REQUEST_CODE);
+		//		pw.stopSpinning();
+		
 	}
 	@Override
 	public void updateUI(int reqCode, Object response) {
@@ -164,12 +172,12 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	@Override
 	public void updateUI(int reqCode, String sender, String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void updateUI(String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
