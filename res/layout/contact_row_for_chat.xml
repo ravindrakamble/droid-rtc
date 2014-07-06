@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativelay"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_10">
+	<ImageView 
+	    android:id="@+id/img_profile"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@drawable/profile"
+	    android:contentDescription="@string/cd"
+	    android:layout_centerVertical="true"
+	    />
+    <TextView
+        android:id="@+id/nameID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:maxLines="1"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/img_profile"
+        android:text="@string/test" >
+    </TextView>
+
+    <ImageView 
+	    android:id="@+id/img_status"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:contentDescription="@string/cd"
+	    android:layout_margin="@dimen/margin_5"
+	    android:layout_below="@+id/nameID"
+	    android:layout_toRightOf="@+id/img_profile"
+	    />
+    <TextView
+        android:id="@+id/txt_last_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textColor="#fff"
+        android:textSize="12sp"
+        android:layout_below="@+id/nameID"
+        android:layout_toRightOf="@+id/img_status"
+        android:text="@string/test" >
+    </TextView>
+    <TextView
+        android:id="@+id/presenceID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:maxLines="1"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:text="@string/test" />
+    <TextView
+        android:id="@+id/txt_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:maxLines="1"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:layout_below="@+id/presenceID" />
+
+</RelativeLayout>

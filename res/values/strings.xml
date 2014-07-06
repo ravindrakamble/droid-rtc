@@ -7,5 +7,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="user_id">User id</string>
     <string name="password">Password</string>
+    <string name="test">Test String</string>
+    <string name="number">10</string>
+    <string name="cd">Content Description</string>
 
 </resources>

@@ -52,7 +52,7 @@ public class ConnectionManager {
 	private ArrayList<ContactData> contactList;
 
 	private ConnectionManager(){
-		pool  = Executors.newFixedThreadPool(1);
+		pool  = Executors.newFixedThreadPool(2);
 	}
 
 	public static ConnectionManager getInstance(){
