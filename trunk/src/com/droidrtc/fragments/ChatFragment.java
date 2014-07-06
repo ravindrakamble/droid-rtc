@@ -31,7 +31,7 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.contacts, container, false);
+		View rootView = inflater.inflate(R.layout.contacts_for_chat, container, false);
 		contactListView = (ListView)rootView.findViewById(R.id.list);
 		contactListView.setOnItemClickListener(this);
 		ConnectionManager.getInstance().getContacts(this);
@@ -62,7 +62,7 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 	protected Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row, contactList);
+			contactAdapter = new ContactAdapter(getActivity(), R.layout.contact_row_for_chat, contactList);
 			contactListView.setAdapter(contactAdapter);
 		}
 	};
