@@ -44,9 +44,9 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		userEditText = (EditText) findViewById(R.id.userEditID);
 		pwdEditText = (EditText) findViewById(R.id.pwdEditID);
 		login = (Button) findViewById(R.id.loginBtnID);
-		userEditText.setTypeface(Fonts.BOOK_ANTIQUA);
-		pwdEditText.setTypeface(Fonts.BOOK_ANTIQUA);
-		login.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+		userEditText.setTypeface(Fonts.THROW_HANDS);
+		pwdEditText.setTypeface(Fonts.THROW_HANDS);
+		login.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 		login.setOnClickListener(this);
 		connectionDetector = new ConnectionDetector(getApplicationContext());
 	}

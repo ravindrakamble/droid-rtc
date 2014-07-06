@@ -28,7 +28,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 		View rootView = inflater.inflate(R.layout.settings, container, false);
 		logout = (RelativeLayout)rootView.findViewById(R.id.logoutLayoutID);
 		logoutTextView = (TextView)rootView.findViewById(R.id.logoutID);
-		logoutTextView.setTypeface(Fonts.BOOK_ANTIQUA);
+		logoutTextView.setTypeface(Fonts.THROW_HANDS);
 		logout.setOnClickListener(this);
 		return rootView;
 	}
@@ -49,11 +49,11 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 		dialog.setContentView(R.layout.custom_alert);
 		TextView alertText = (TextView)dialog.findViewById(R.id.alertTextID);
 		alertText.setText("Do you want to logout?");
-		alertText.setTypeface(Fonts.BOOK_ANTIQUA);
+		alertText.setTypeface(Fonts.THROW_HANDS);
 		Button okButton = (Button) dialog.findViewById(R.id.okBtnID);
-		okButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+		okButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 		Button cancelButton = (Button)dialog.findViewById(R.id.cancelBtnID);
-		cancelButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+		cancelButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 		okButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

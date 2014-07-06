@@ -188,7 +188,7 @@ public class ProgressWheel extends View {
         textPaint.setStyle(Style.FILL);
         textPaint.setAntiAlias(true);
         textPaint.setTextSize(textSize);
-        textPaint.setTypeface(Fonts.BOOK_ANTIQUA);
+        textPaint.setTypeface(Fonts.THROW_HANDS);
 
         contourPaint.setColor(contourColor);
         contourPaint.setAntiAlias(true);

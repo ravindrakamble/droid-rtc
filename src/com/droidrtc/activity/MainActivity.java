@@ -64,10 +64,10 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 		View v = LayoutInflater.from(ctx).inflate(R.layout.tab_item, null);
 		v.setBackgroundResource(resid);
 		tabText = (TextView)v.findViewById(R.id.txt_tabtxt);
-		tabText.setTypeface(Fonts.BOOK_ANTIQUA);
+		tabText.setTypeface(Fonts.THROW_HANDS);
 		ImageView img = (ImageView)v.findViewById(R.id.img_tabtxt);
 		tabText.setText(string);
-		tabText.setTypeface(Fonts.BOOK_ANTIQUA);				
+		tabText.setTypeface(Fonts.THROW_HANDS);				
 		img.setBackgroundResource(icon);		
 		return spec.setIndicator(v);
 	}
@@ -110,11 +110,11 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 					dialog.setContentView(R.layout.custom_alert);
 					TextView alertText = (TextView)dialog.findViewById(R.id.alertTextID);
 					alertText.setText("Do you want to exit?");
-					alertText.setTypeface(Fonts.BOOK_ANTIQUA);
+					alertText.setTypeface(Fonts.THROW_HANDS);
 					Button okButton = (Button) dialog.findViewById(R.id.okBtnID);
-					okButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+					okButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 					Button cancelButton = (Button)dialog.findViewById(R.id.cancelBtnID);
-					cancelButton.setTypeface(Fonts.BOOK_ANTIQUA,Typeface.BOLD);
+					cancelButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 					okButton.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {

@@ -42,9 +42,11 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 	public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
 		
 		ContactData contactData = (ContactData) contactListView.getItemAtPosition(position);
-		String name = contactData.getName();
+		String name = contactData.getName();		
+		String presence = contactData.getPresence().toString();
 		Intent intent = new Intent(getActivity(),ChatActivity.class);
 		intent.putExtra("Name", name);
+		intent.putExtra("Presence", presence);
 		startActivity(intent);
 
 	}
