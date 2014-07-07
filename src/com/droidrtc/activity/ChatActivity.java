@@ -94,12 +94,11 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		mSendText.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-					adapter.add(new OneComment(false, null, mSendText.getText().toString()));	
-
+					adapter.add(new OneComment(false, null, mSendText.getText().toString()));
 					text = mSendText.getText().toString();
 					mSendText.setText("");
-					Toast.makeText(ChatActivity.this, recipient, Toast.LENGTH_SHORT).show();
 					RtcLogs.i(TAG, "Sending text [" + text + "] to [" + recipient + "]");
+					text = EmoticonParser.getInstance().addEmoticonSpans(text).toString();
 					ChatData tmpChat = new ChatData();
 					tmpChat.setDirection(0);
 					String tmpTo = recipient.split("\\@")[0];
@@ -154,7 +153,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			String message = intent.getStringExtra("MESSAGE");
 			String from = intent.getStringExtra("FROM");			
 			RtcLogs.d("receiver", "Got message: " + message+";From:"+from);			
-			message = EmoticonParser.getInstance().addSmileySpans(message).toString();			
+			message = EmoticonParser.getInstance().addEmoticonSpans(message).toString();			
 			RtcLogs.d(TAG, "Modified message: ["+ message+"]");
 			adapter.add(new OneComment(true, message, null));
 			adapter.notifyDataSetChanged();

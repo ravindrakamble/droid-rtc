@@ -129,7 +129,7 @@ public class EmoticonParser {
         return Pattern.compile(patternString.toString());
     }
 
-    public CharSequence addSmileySpans(CharSequence text) {
+    public CharSequence addEmoticonSpans(CharSequence text) {
         SpannableStringBuilder builder = new SpannableStringBuilder(text);
 
         Matcher matcher = mPattern.matcher(text);
