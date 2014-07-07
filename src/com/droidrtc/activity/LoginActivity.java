@@ -4,6 +4,7 @@ import org.jivesoftware.smack.SmackAndroid;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,10 +17,12 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.droidrtc.R;
 import com.droidrtc.connection.ConnectionDetector;
 import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.util.Constants;
 import com.droidrtc.util.Fonts;
 import com.droidrtc.util.ProgressWheel;
 
@@ -109,12 +112,12 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+
 		if( pw != null){
 			pw.stopSpinning();
 			pw.setVisibility(View.GONE);
 		}
-		
+
 		userEditText.setAlpha(1f);
 		pwdEditText.setAlpha(1f);
 		login.setAlpha(1f);
@@ -123,42 +126,30 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	protected Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			switch(msg.what){
-			case 1:
-
-				if(loginSuccess){
-					openMainActivity();
-				}else{
-					showAlert("Login failed");
-				}
+			switch (msg.what) {
+			case Constants.LOGIN_REQ_SUCCESS:
+				openMainActivity();
 				break;
-			case 2:
-
-				if(loginSuccess){
-					openMainActivity();
-				}else{
-					showAlert("Wrong Username or Password");
-				}
+			case Constants.LOGIN_REQ_FAILURE:
+				showCustomAlert("Wrong Username or Password");
+				break;
+			case Constants.CONN_REQ_FAILURE:
+				showCustomAlert("Login failed");
+				break;
+			default:
 				break;
 			}
-
 		}
 	};
 	private void openMainActivity(){
-		
+
 		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
 		startActivityForResult(intent, LOGIN_REQUEST_CODE);
 		//		pw.stopSpinning();
-		
+
 	}
 	@Override
 	public void updateUI(int reqCode, Object response) {
-		if(response instanceof Boolean){
-			loginSuccess = (Boolean)response;
-		}
-		Message msg = Message.obtain();
-		msg.what = reqCode;
-		handler.sendMessage(msg);
 
 	}  
 	@Override
@@ -178,5 +169,43 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		// TODO Auto-generated method stub
 
 	}
+	@Override
+	public void updateUI(int reqCode) {
+		Message msg = Message.obtain();
+		msg.what = reqCode;
+		handler.sendMessage(msg);
 
+
+	}
+	private void showCustomAlert(String message){
+		final Dialog dialog = new Dialog(this);
+		
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		dialog.setContentView(R.layout.custom_alert);
+		TextView alertText = (TextView)dialog.findViewById(R.id.alertTextID);
+		alertText.setText(message);
+		alertText.setTypeface(Fonts.THROW_HANDS);
+		Button okButton = (Button) dialog.findViewById(R.id.okBtnID);
+		okButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
+		Button cancelButton = (Button)dialog.findViewById(R.id.cancelBtnID);
+		cancelButton.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
+		okButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent returnIntent = new Intent();
+				setResult(RESULT_OK,returnIntent);
+				finish();
+			}
+		});
+		cancelButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.cancel();
+			}
+		});
+
+		dialog.show();
+
+}
 }

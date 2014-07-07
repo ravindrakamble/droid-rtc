@@ -1,14 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ProgressWheel="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@color/LIGHT_GREEN">
 
+    <RelativeLayout
+        android:id="@+id/headerID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/GRAY_LiGHT" >
+        <ImageView 
+            android:id="@+id/addContactID"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/add_contact" />
+
+        <TextView
+            android:id="@+id/nameID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@+id/addContactID"
+            android:text="Chakri"
+            android:textSize="25sp" />
+
+        <ImageButton
+            android:id="@+id/presenceID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/btn_status_mode"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:src="@drawable/ic_status_available" />
+    </RelativeLayout>
     <ListView
         android:id="@+id/list"
+        android:layout_below="@+id/headerID"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:cacheColorHint="#00000000" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal" >
+
+        <com.droidrtc.util.ProgressWheel
+            android:id="@+id/progressWheel"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            ProgressWheel:barColor="@color/LIGHT_GREEN"
+            ProgressWheel:barLength="40dp"
+            ProgressWheel:barWidth="20dp"
+            ProgressWheel:rimColor="@android:color/white"
+            ProgressWheel:rimWidth="25dp"
+            ProgressWheel:spinSpeed="3dp"
+            ProgressWheel:textColor="#222222"
+            ProgressWheel:textSize="20sp" 
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </RelativeLayout>

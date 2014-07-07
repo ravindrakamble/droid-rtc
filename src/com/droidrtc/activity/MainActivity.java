@@ -156,4 +156,10 @@ public class MainActivity extends FragmentActivity implements UIUpdator,OnTabCha
 			}
 			return false;
 	}
+
+	@Override
+	public void updateUI(int reqCode) {
+		// TODO Auto-generated method stub
+		
+	}
 }
