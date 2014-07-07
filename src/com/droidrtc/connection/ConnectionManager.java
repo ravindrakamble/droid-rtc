@@ -20,6 +20,8 @@ import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.packet.Presence.Mode;
+import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.ReportedData;
@@ -109,9 +111,10 @@ public class ConnectionManager {
 				uiUpdator.updateUI(1, false);
 				Log.e("XMPPClient", "[SettingsDialog] Failed to connect to " + connection.getHost());
 			}
-			try {
+			try {				
+				recievePackets(connection);
+				
 				Log.e("XMPPClient", "userName:" + userName+"Password:"+password);
-				recieveMessages(connection);
 				connection.login(userName, password);
 				Log.i("XMPPClient", "Logged in as " + connection.getUser());
 				Constants.xmppConnection = connection;
@@ -132,28 +135,38 @@ public class ConnectionManager {
 				uiUpdator.updateUI(2, false);
 			}
 		}
-	} 
-	public void recieveMessages(XMPPConnection connection) {
+	}
+	
+	public void recievePackets(XMPPConnection connection) {
 		if (connection != null) {
 			// Add a packet listener to get messages sent to us
 			PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
 			connection.addPacketListener(new PacketListener() {
 				@Override
 				public void processPacket(Packet packet) {
-					Message message = (Message) packet;
-					if (message.getBody() != null) {
-						String sender = StringUtils.parseBareAddress(message.getFrom());
-						RtcLogs.i(TAG, " Text Recieved " + message.getBody() + " from " +  sender);
-						RtcLogs.i(TAG,sender + ":");
-						RtcLogs.i(TAG,message.getBody());
-						uiUpdator.updateUI(6, sender,message.getBody());
-						sendBroadcastMessage(sender,message.getBody());
+					if(packet instanceof Message){
+						Message message = (Message) packet;
+						if (message.getBody() != null) {
+							String sender = StringUtils.parseBareAddress(message.getFrom());
+							RtcLogs.i(TAG, " Text Recieved " + message.getBody() + " from " +  sender);
+							RtcLogs.i(TAG,sender + ":");
+							RtcLogs.i(TAG,message.getBody());
+							uiUpdator.updateUI(6, sender,message.getBody());
+							sendBroadcastMessage(sender,message.getBody());
+						}
 					}
-				}
+					else if(packet instanceof Presence) {
+						Presence presence = (Presence) packet;
+						String sender = StringUtils.parseBareAddress(presence.getFrom());
+						RtcLogs.i(TAG, " presence type : " + presence.getType()+ " presence mode :" +  presence.getMode());
+						RtcLogs.i(TAG, " presence To : " + presence.getTo()+ " presence from :" +  presence.getFrom());
+						sendBroadcastMessage(sender,presence);
+					}
+				}					
 			}, filter);
 		}
-
 	}
+
 	private class ContactsTask implements Runnable{
 		@Override
 		public void run() {
@@ -206,13 +219,22 @@ public class ConnectionManager {
 	}
 	
 	private void sendBroadcastMessage(String from,String msg) {
-		Intent intent = new Intent("my-msg");
-		// add data
+		Intent intent = new Intent("my-msg");		
 		intent.putExtra("FROM", from);
 		intent.putExtra("MESSAGE", msg);
 		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
 	} 
 
+	private void sendBroadcastMessage(String from, Presence presence) {
+		Intent intent = new Intent("my-presence");
+		Type presenceType = presence.getType();
+		Mode presenceMode = presence.getMode();
+		intent.putExtra("FROM", from);
+		intent.putExtra("PresenceType", presenceType);
+		intent.putExtra("presenceMode", presenceMode);
+		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
+	}
+	
 	private class searchUserTask implements Runnable{
 
 		@Override
