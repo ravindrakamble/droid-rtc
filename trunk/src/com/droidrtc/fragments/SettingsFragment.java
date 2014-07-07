@@ -28,7 +28,7 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 		View rootView = inflater.inflate(R.layout.settings, container, false);
 		logout = (RelativeLayout)rootView.findViewById(R.id.logoutLayoutID);
 		logoutTextView = (TextView)rootView.findViewById(R.id.logoutID);
-		logoutTextView.setTypeface(Fonts.THROW_HANDS);
+		logoutTextView.setTypeface(Fonts.THROW_HANDS_BOLD);
 		logout.setOnClickListener(this);
 		return rootView;
 	}
@@ -88,6 +88,11 @@ public class SettingsFragment extends Fragment implements OnClickListener,UIUpda
 	@Override
 	public void updateUI(String message) {
 		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void updateUI(int reqCode) {
+		getActivity().finish();
 		
 	}
 

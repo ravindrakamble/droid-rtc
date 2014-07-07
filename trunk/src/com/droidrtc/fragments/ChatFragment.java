@@ -83,4 +83,10 @@ public class ChatFragment extends Fragment implements OnItemClickListener,UIUpda
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void updateUI(int reqCode) {
+		// TODO Auto-generated method stub
+		
+	}
 }

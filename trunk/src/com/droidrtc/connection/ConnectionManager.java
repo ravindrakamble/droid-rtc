@@ -92,12 +92,29 @@ public class ConnectionManager {
 		pool.execute(sendMsgTask);
 	}
 	
+	public boolean IsContactAdded(String userName) {
+		for(int index = 0; index < contactList.size(); index++){
+			ContactData contact = contactList.get(index);
+			if(contact.getName().equalsIgnoreCase(userName)) {
+				return true;
+			}
+		}
+		return false;
+	}	
+	
 	public void checkUserPresent(String userName){
-		this.userName = userName;
+		this.userName = userName;		
 		searchUserTask UserPresent = new searchUserTask();  
 		pool.execute(UserPresent);
 	}
 
+	public void addUser(String userName) {
+		this.userName = userName;		
+		AddUserTask addUserTask = new AddUserTask();
+		pool.execute(addUserTask);
+	}
+	
+	
 	private class ConnectionTask implements Runnable{
 		@Override
 		public void run() {
@@ -108,7 +125,7 @@ public class ConnectionManager {
 				Log.i("XMPPClient", "[SettingsDialog] Connected to " + connection.getHost());
 
 			} catch (XMPPException ex) {
-				uiUpdator.updateUI(1, false);
+				uiUpdator.updateUI(Constants.CONN_REQ_FAILURE);
 				Log.e("XMPPClient", "[SettingsDialog] Failed to connect to " + connection.getHost());
 			}
 			try {				
@@ -116,23 +133,22 @@ public class ConnectionManager {
 				
 				Log.e("XMPPClient", "userName:" + userName+"Password:"+password);
 				connection.login(userName, password);
+				Constants.LOGGED_IN_USER = userName;
 				Log.i("XMPPClient", "Logged in as " + connection.getUser());
 				Constants.xmppConnection = connection;
 				
-				//To receive any offline messages for this user, set the presence to Unavailable 
-				//and then to available  
 				Presence presence = new Presence(Presence.Type.unavailable);
 				connection.sendPacket(presence);
 				
 				presence = new Presence(Presence.Type.available);
 				connection.sendPacket(presence);
 				
-				uiUpdator.updateUI(1, true);
+				uiUpdator.updateUI(Constants.LOGIN_REQ_SUCCESS);
 				chatManager = connection.getChatManager();
 				messageListener = new ChatMessageListner();
 			} catch (XMPPException ex) {
 				Log.e("XMPPClient", "[SettingsDialog] Failed to log in as " + userName);
-				uiUpdator.updateUI(2, false);
+				uiUpdator.updateUI(Constants.LOGIN_REQ_FAILURE);
 			}
 		}
 	}
@@ -151,7 +167,6 @@ public class ConnectionManager {
 							RtcLogs.i(TAG, " Text Recieved " + message.getBody() + " from " +  sender);
 							RtcLogs.i(TAG,sender + ":");
 							RtcLogs.i(TAG,message.getBody());
-							uiUpdator.updateUI(6, sender,message.getBody());
 							sendBroadcastMessage(sender,message.getBody());
 						}
 					}
@@ -160,9 +175,14 @@ public class ConnectionManager {
 						String sender = StringUtils.parseBareAddress(presence.getFrom());
 						RtcLogs.i(TAG, " presence type : " + presence.getType()+ " presence mode :" +  presence.getMode());
 						RtcLogs.i(TAG, " presence To : " + presence.getTo()+ " presence from :" +  presence.getFrom());
+						if (presence.getType() == Type.subscribe) {
+							
+		                } else {
+		                	
+		                }
 						sendBroadcastMessage(sender,presence);
 					}
-				}					
+				}
 			}, filter);
 		}
 	}
@@ -187,7 +207,7 @@ public class ConnectionManager {
 				contacts.setPresence(entryPresence.getType());
 				contactList.add(contacts);
 			}
-			uiUpdator.updateUI(3, contactList);
+			uiUpdator.updateUI(Constants.LIST_CONTACTS_REQ_SUCCESS, contactList);
 		}
 
 	}
@@ -195,25 +215,31 @@ public class ConnectionManager {
 
 		@Override
 		public void run() {
-			if(connection != null && connection.isConnected()){
-				connection.disconnect();
+			try {
+				if (connection != null && connection.isConnected()) {
+					connection.disconnect();
+					uiUpdator.updateUI(Constants.LOGOUT_SUCCESS);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				uiUpdator.updateUI(Constants.LOGOUT_FAILURE);
 			}
-			uiUpdator.updateUI(4, true);
+			
 		}
 	}
 
 	private class SendMsgTask implements Runnable{
-
 		@Override
-
 		public void run() {
 			Chat chat = chatManager.createChat(recipient, messageListener);
 			try {
 				chat.sendMessage(msg);
+				uiUpdator.updateUI(Constants.SEND_CHAT_SUCCESS);
 			} catch (XMPPException e) {
 				e.printStackTrace();
+				uiUpdator.updateUI(Constants.SEND_CHAT_FAILURE);
 			}
-			uiUpdator.updateUI(5, true);
+			
 		}
 
 	}
@@ -235,10 +261,34 @@ public class ConnectionManager {
 		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
 	}
 	
+	private class AddUserTask implements Runnable {
+		@Override
+		public void run() {
+			Presence subscribe = new Presence(Presence.Type.subscribe);
+			String address = userName + Constants.SERVER_HOST;
+            subscribe.setTo(address);
+            connection.sendPacket(subscribe);
+            
+            try {
+            	Roster roster = connection.getRoster();
+                roster.createEntry(address, userName, null);
+                uiUpdator.updateUI(Constants.ADD_CONTACT_SUCCESS);
+            } catch (XMPPException e) {
+                e.printStackTrace();
+                uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
+            }
+		}
+	}
+	
 	private class searchUserTask implements Runnable{
 
 		@Override
 		public void run() {
+			if(IsContactAdded(userName)) {
+				uiUpdator.updateUI(Constants.CONTACT_EXISTS);
+				return;
+			}
+
 			UserSearchManager search = new UserSearchManager(connection);
 			try {
 				Form searchForm = search.getSearchForm("search." + connection.getServiceName());
@@ -263,21 +313,18 @@ public class ConnectionManager {
 						{
 							String value = iterator.next().toString();
 							if(value.equals(userName)){
-								uiUpdator.updateUI(4, true);
+								addUser(userName);
 							}
 						}
 					}
-
 				}else{
-					uiUpdator.updateUI(4, false);
+					uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
 				}
 			} catch (XMPPException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				uiUpdator.updateUI(4, false);
+				uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
 			}
-			uiUpdator.updateUI(4, false);
 		}
-
 	}
 }

@@ -63,13 +63,12 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="70"
-            android:gravity="center"
+            android:layout_weight="80"
             android:padding="10dip" >
 
             <EditText
                 android:id="@+id/sendTextId"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_corner"
                 android:ems="10"
@@ -82,13 +81,13 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="fill_parent"
-            android:layout_weight="30"
+            android:layout_weight="20"
             android:gravity="center"
             android:paddingLeft="5dip" >
 
             <Button
                 android:id="@+id/sendBtnID"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="35dip"
                 android:background="@drawable/rounded_corner"
                 android:enabled="false"

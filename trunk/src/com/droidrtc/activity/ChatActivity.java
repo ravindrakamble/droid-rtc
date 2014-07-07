@@ -195,7 +195,6 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			adapter.add(new OneComment(false, null, mSendText.getText().toString()));
 			text = mSendText.getText().toString();
 			mSendText.setText("");
-			Toast.makeText(ChatActivity.this, recipient, Toast.LENGTH_SHORT).show();
 			RtcLogs.i(TAG, "Sending text [" + text + "] to [" + recipient + "]");
 			ChatData tmpChat = new ChatData();
 			tmpChat.setDirection(0);
@@ -213,5 +212,10 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		default:
 			break;
 		}
+	}
+	@Override
+	public void updateUI(int reqCode) {
+		// TODO Auto-generated method stub
+		
 	}
 }
