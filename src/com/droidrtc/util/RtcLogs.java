@@ -29,5 +29,4 @@ public class RtcLogs {
 			Log.w(tag,message);
 		}
 	}
-
 }

@@ -31,6 +31,7 @@ import com.droidrtc.connection.ConnectionManager;
 import com.droidrtc.data.ChatData;
 import com.droidrtc.data.OneComment;
 import com.droidrtc.database.DatabaseHelper;
+import com.droidrtc.util.EmoticonParser;
 import com.droidrtc.util.Fonts;
 import com.droidrtc.util.RtcLogs;
 
@@ -46,14 +47,14 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 	public Date date;
 	Button sendBtn;
 	TextView name;
-	private ImageButton presenceButton;
+	private ImageButton presenceButton;	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.chat);
-
+		setContentView(R.layout.chat);		
+		EmoticonParser.init(this);
 		Intent intent = getIntent();
 		recipient = intent.getStringExtra("Name");
 		presence = intent.getStringExtra("Presence");
@@ -107,9 +108,6 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 					tmpChat.setDate(date.getTime());
 					chatDB.insertChat(tmpChat);
 					ConnectionManager.getInstance().sendMsg(recipient, text,ChatActivity.this);
-					RtcLogs.e(TAG, "************************");
-					RtcLogs.e(TAG, "sent [" + text + "] to [" + recipient + "]");
-					RtcLogs.e(TAG, "************************");
 					return true;
 				}
 				return false;
@@ -129,9 +127,6 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 				for(int index = 0; index < chatlist.size(); index++ ){
 					ChatData tmpchat = chatlist.get(index);
 					message = tmpchat.getMessage();
-					RtcLogs.e(TAG, "************************");
-					RtcLogs.e(TAG, "read [" + message + "] with [" + recipient + "] direction [" + tmpchat.getDirection() + "]");
-					RtcLogs.e(TAG, "************************");
 					if(message != null) {
 						if(tmpchat.getDirection() > 0){
 							adapter.add(new OneComment(true, message, null));	
@@ -157,20 +152,19 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String message = intent.getStringExtra("MESSAGE");
-			String from = intent.getStringExtra("FROM");
-			RtcLogs.d("receiver", "Got message: " + message+";From:"+from);
+			String from = intent.getStringExtra("FROM");			
+			RtcLogs.d("receiver", "Got message: " + message+";From:"+from);			
+			message = EmoticonParser.getInstance().addSmileySpans(message).toString();			
+			RtcLogs.d(TAG, "Modified message: ["+ message+"]");
 			adapter.add(new OneComment(true, message, null));
 			adapter.notifyDataSetChanged();
 			ChatData tmpChat = new ChatData();
 			tmpChat.setDirection(1);
 			String tmpTo = from.split("\\@")[0];
-			tmpChat.setContactName(tmpTo);			
+			tmpChat.setContactName(tmpTo);
 			tmpChat.setMessage(message);
 			tmpChat.setDate(date.getTime());
 			chatDB.insertChat(tmpChat);
-			RtcLogs.e(TAG, "************************");
-			RtcLogs.e(TAG, "recvd [" + message + "] from [" + from + "]");
-			RtcLogs.e(TAG, "************************");
 		}
 	};
 	@Override
