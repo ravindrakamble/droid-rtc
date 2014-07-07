@@ -114,9 +114,14 @@ public class ConnectionManager {
 				recieveMessages(connection);
 				connection.login(userName, password);
 				Log.i("XMPPClient", "Logged in as " + connection.getUser());
-				Constants.xmppConnection = connection;				
-				// Set the status to available
-				Presence presence = new Presence(Presence.Type.available);
+				Constants.xmppConnection = connection;
+				
+				//To receive any offline messages for this user, set the presence to Unavailable 
+				//and then to available  
+				Presence presence = new Presence(Presence.Type.unavailable);
+				connection.sendPacket(presence);
+				
+				presence = new Presence(Presence.Type.available);
 				connection.sendPacket(presence);
 				
 				uiUpdator.updateUI(1, true);
@@ -163,17 +168,7 @@ public class ConnectionManager {
 			ContactData contacts = null;
 			contactList = new ArrayList<ContactData>();
 			for (RosterEntry entry : entries) {
-
-				Log.d("XMPPChatDemoActivity",  "--------------------------------------");
-				Log.d("XMPPChatDemoActivity", "RosterEntry " + entry);
-				Log.d("XMPPChatDemoActivity", "User: " + entry.getUser());
-				Log.d("XMPPChatDemoActivity", "Name: " + entry.getName());
-				Log.d("XMPPChatDemoActivity", "Status: " + entry.getStatus());
-				Log.d("XMPPChatDemoActivity", "Type: " + entry.getType());
 				Presence entryPresence = roster.getPresence(entry.getUser());
-
-				Log.d("XMPPChatDemoActivity", "Presence Status: "+ entryPresence.getStatus());
-				Log.d("XMPPChatDemoActivity", "Presence Type: " + entryPresence.getType());
 				contacts = new ContactData();
 				contacts.setName(entry.getUser());
 				contacts.setPresence(entryPresence.getType());

@@ -38,7 +38,6 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.login);
-
 		pw = (ProgressWheel) findViewById(R.id.progressWheel);
 		pw.setVisibility(View.GONE);
 		userEditText = (EditText) findViewById(R.id.userEditID);
