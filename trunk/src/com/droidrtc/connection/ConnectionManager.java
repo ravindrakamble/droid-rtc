@@ -33,6 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.droidrtc.activity.UIUpdator;
+import com.droidrtc.data.AllChatData;
 import com.droidrtc.data.ContactData;
 import com.droidrtc.util.Constants;
 import com.droidrtc.util.MyApplication;
@@ -63,8 +64,8 @@ public class ConnectionManager {
 			connectionManager = new ConnectionManager();
 		}
 		return connectionManager;
-	}	
-	
+	}
+
 	public void connect(String userName,String password, UIUpdator uiUpdator){
 		this.userName = userName;
 		this.password = password;
@@ -91,7 +92,7 @@ public class ConnectionManager {
 		SendMsgTask sendMsgTask = new SendMsgTask();
 		pool.execute(sendMsgTask);
 	}
-	
+
 	public boolean IsContactAdded(String userName) {
 		for(int index = 0; index < contactList.size(); index++){
 			ContactData contact = contactList.get(index);
@@ -100,21 +101,21 @@ public class ConnectionManager {
 			}
 		}
 		return false;
-	}	
-	
+	}
+
 	public void checkUserPresent(String userName){
-		this.userName = userName;		
-		searchUserTask UserPresent = new searchUserTask();  
+		this.userName = userName;
+		searchUserTask UserPresent = new searchUserTask();
 		pool.execute(UserPresent);
 	}
 
 	public void addUser(String userName) {
-		this.userName = userName;		
+		this.userName = userName;
 		AddUserTask addUserTask = new AddUserTask();
 		pool.execute(addUserTask);
 	}
-	
-	
+
+
 	private class ConnectionTask implements Runnable{
 		@Override
 		public void run() {
@@ -128,32 +129,43 @@ public class ConnectionManager {
 				uiUpdator.updateUI(Constants.CONN_REQ_FAILURE);
 				Log.e("XMPPClient", "[SettingsDialog] Failed to connect to " + connection.getHost());
 			}
-			try {				
+			try {
 				recievePackets(connection);
-				
+
 				Log.e("XMPPClient", "userName:" + userName+"Password:"+password);
 				connection.login(userName, password);
 				Constants.LOGGED_IN_USER = userName;
 				Log.i("XMPPClient", "Logged in as " + connection.getUser());
+
 				Constants.xmppConnection = connection;
-				
-				Presence presence = new Presence(Presence.Type.unavailable);
+				// Set the status to available
+				Presence presence = new Presence(Presence.Type.available);
+
 				connection.sendPacket(presence);
-				
+
 				presence = new Presence(Presence.Type.available);
 				connection.sendPacket(presence);
-				
+
 				uiUpdator.updateUI(Constants.LOGIN_REQ_SUCCESS);
 				chatManager = connection.getChatManager();
 				messageListener = new ChatMessageListner();
 			} catch (XMPPException ex) {
 				Log.e("XMPPClient", "[SettingsDialog] Failed to log in as " + userName);
 				uiUpdator.updateUI(Constants.LOGIN_REQ_FAILURE);
+			}catch(Exception e){
+				e.printStackTrace();
+				Log.e("XMPPClient", "[SettingsDialog] Failed to log in as " + userName);
+				uiUpdator.updateUI(2, false);
 			}
 		}
+
 	}
-	
+	public void recieveMessages(XMPPConnection connection) {
+
+	}
+
 	public void recievePackets(XMPPConnection connection) {
+
 		if (connection != null) {
 			// Add a packet listener to get messages sent to us
 			PacketFilter filter = new MessageTypeFilter(Message.Type.chat);
@@ -176,9 +188,9 @@ public class ConnectionManager {
 						RtcLogs.i(TAG, " presence type : " + presence.getType()+ " presence mode :" +  presence.getMode());
 						RtcLogs.i(TAG, " presence To : " + presence.getTo()+ " presence from :" +  presence.getFrom());
 						if (presence.getType() == Type.subscribe) {
-							
+
 		                } else {
-		                	
+
 		                }
 						sendBroadcastMessage(sender,presence);
 					}
@@ -193,7 +205,7 @@ public class ConnectionManager {
 			Roster roster = null;
 			Collection<RosterEntry> entries;
 			try {
-				roster = connection.getRoster();				
+				roster = connection.getRoster();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -205,6 +217,8 @@ public class ConnectionManager {
 				contacts = new ContactData();
 				contacts.setName(entry.getUser());
 				contacts.setPresence(entryPresence.getType());
+				String name = contacts.getName().split("\\@")[0];
+				contacts.setChatHistory(AllChatData.INSTANCE.getChatHistory(name));
 				contactList.add(contacts);
 			}
 			uiUpdator.updateUI(Constants.LIST_CONTACTS_REQ_SUCCESS, contactList);
@@ -224,7 +238,7 @@ public class ConnectionManager {
 				e.printStackTrace();
 				uiUpdator.updateUI(Constants.LOGOUT_FAILURE);
 			}
-			
+
 		}
 	}
 
@@ -239,17 +253,17 @@ public class ConnectionManager {
 				e.printStackTrace();
 				uiUpdator.updateUI(Constants.SEND_CHAT_FAILURE);
 			}
-			
+
 		}
 
 	}
-	
+
 	private void sendBroadcastMessage(String from,String msg) {
-		Intent intent = new Intent("my-msg");		
+		Intent intent = new Intent("my-msg");
 		intent.putExtra("FROM", from);
 		intent.putExtra("MESSAGE", msg);
 		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
-	} 
+	}
 
 	private void sendBroadcastMessage(String from, Presence presence) {
 		Intent intent = new Intent("my-presence");
@@ -260,7 +274,7 @@ public class ConnectionManager {
 		intent.putExtra("presenceMode", presenceMode);
 		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
 	}
-	
+
 	private class AddUserTask implements Runnable {
 		@Override
 		public void run() {
@@ -268,7 +282,7 @@ public class ConnectionManager {
 			String address = userName + Constants.SERVER_HOST;
             subscribe.setTo(address);
             connection.sendPacket(subscribe);
-            
+
             try {
             	Roster roster = connection.getRoster();
                 roster.createEntry(address, userName, null);
@@ -279,7 +293,7 @@ public class ConnectionManager {
             }
 		}
 	}
-	
+
 	private class searchUserTask implements Runnable{
 
 		@Override
