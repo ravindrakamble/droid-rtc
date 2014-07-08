@@ -22,7 +22,10 @@ import android.widget.TextView;
 import com.droidrtc.R;
 import com.droidrtc.connection.ConnectionDetector;
 import com.droidrtc.connection.ConnectionManager;
+
+import com.droidrtc.database.DatabaseHelper;
 import com.droidrtc.util.Constants;
+
 import com.droidrtc.util.Fonts;
 import com.droidrtc.util.ProgressWheel;
 
@@ -75,7 +78,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 				login.setAlpha(.2f);
 				pw.spin();
 				pw.setText("Logging in...");
-				ConnectionManager.getInstance().connect(userName, password, this);	
+				ConnectionManager.getInstance().connect(userName, password, this);
 			}else{
 				showAlert("Connection Error!!! Please try again");
 			}
@@ -143,6 +146,9 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	};
 	private void openMainActivity(){
 
+		DatabaseHelper chatDB = new DatabaseHelper(getApplicationContext());
+		chatDB.cacheChatHistory();
+
 		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
 		startActivityForResult(intent, LOGIN_REQUEST_CODE);
 		//		pw.stopSpinning();
@@ -151,7 +157,7 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 	@Override
 	public void updateUI(int reqCode, Object response) {
 
-	}  
+	}
 	@Override
 	public boolean isFinishing() {
 		if(dialog != null && dialog.isShowing()){

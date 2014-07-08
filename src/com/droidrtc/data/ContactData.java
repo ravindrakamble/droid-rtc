@@ -1,5 +1,7 @@
 package com.droidrtc.data;
 
+import java.util.List;
+
 import org.jivesoftware.smack.packet.Presence.Type;
 
 public class ContactData {
@@ -8,7 +10,9 @@ public class ContactData {
 	private Type presence;
 	private String status;
 	private String type;
-	
+	private List<ChatData> chatHistory;
+	private String lastMessage;
+
 	public String getName() {
 		return name;
 	}
@@ -39,5 +43,17 @@ public class ContactData {
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+	public List<ChatData> getChatHistory() {
+		return chatHistory;
+	}
+	public void setChatHistory(List<ChatData> chatHistory) {
+		this.chatHistory = chatHistory;
+	}
+	public String getLastMessage() {
+		return lastMessage;
+	}
+	public void setLastMessage(String lastMessage) {
+		this.lastMessage = lastMessage;
+	}
+
 }

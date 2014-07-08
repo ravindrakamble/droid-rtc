@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.droidrtc.R;
 import com.droidrtc.adapters.ChatAdapter;
 import com.droidrtc.connection.ConnectionManager;
+import com.droidrtc.data.AllChatData;
 import com.droidrtc.data.ChatData;
 import com.droidrtc.data.OneComment;
 import com.droidrtc.database.DatabaseHelper;
@@ -48,7 +49,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 	Button sendBtn;
 	TextView name;
 	private ImageButton presenceButton;	
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +59,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		Intent intent = getIntent();
 		recipient = intent.getStringExtra("Name");
 		presence = intent.getStringExtra("Presence");
-		
+
 		chatDB = new DatabaseHelper(this);
 		date = new Date();
 		adapter = new ChatAdapter(this, R.layout.listitem_discuss);
@@ -72,7 +73,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		}else{
 			presenceButton.setImageResource(R.drawable.ic_status_unavailable);
 		}
-		
+
 		name.setTypeface(Fonts.THROW_HANDS,Typeface.BOLD);
 		name.setText(recipient.split("\\@")[0]);
 		sendBtn = (Button)findViewById(R.id.sendBtnID);
@@ -89,12 +90,15 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			}
 			public void beforeTextChanged(CharSequence s, int start, int count, int after){}
 			public void onTextChanged(CharSequence s, int start, int before, int count){}
-		}); 
+		});
 		sendBtn.setOnClickListener(this);
 		mSendText.setOnKeyListener(new OnKeyListener() {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+
 					adapter.add(new OneComment(false, null, mSendText.getText().toString()));
+
+
 					text = mSendText.getText().toString();
 					mSendText.setText("");
 					RtcLogs.i(TAG, "Sending text [" + text + "] to [" + recipient + "]");
@@ -106,6 +110,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 					tmpChat.setMessage(text);
 					tmpChat.setDate(date.getTime());
 					chatDB.insertChat(tmpChat);
+					AllChatData.INSTANCE.addChatData(tmpTo, tmpChat);
 					ConnectionManager.getInstance().sendMsg(recipient, text,ChatActivity.this);
 					return true;
 				}
@@ -120,7 +125,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 
 		try {
 			chatDB.exportDB();
-			String tmpTo = recipient.split("\\@")[0];			
+			String tmpTo = recipient.split("\\@")[0];
 			chatlist = chatDB.getChatHistory(tmpTo);
 			if(chatlist != null){
 				for(int index = 0; index < chatlist.size(); index++ ){
@@ -128,9 +133,9 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 					message = tmpchat.getMessage();
 					if(message != null) {
 						if(tmpchat.getDirection() > 0){
-							adapter.add(new OneComment(true, message, null));	
+							adapter.add(new OneComment(true, message, null));
 						}else{
-							adapter.add(new OneComment(false, null, message));	
+							adapter.add(new OneComment(false, null, message));
 						}
 					}
 				}
@@ -146,7 +151,7 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 		// Unregister since the activity is not visible
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 		super.onPause();
-	} 
+	}
 	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -164,6 +169,12 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			tmpChat.setMessage(message);
 			tmpChat.setDate(date.getTime());
 			chatDB.insertChat(tmpChat);
+
+			AllChatData.INSTANCE.addChatData(tmpTo, tmpChat);
+			RtcLogs.e(TAG, "************************");
+			RtcLogs.e(TAG, "recvd [" + message + "] from [" + from + "]");
+			RtcLogs.e(TAG, "************************");
+
 		}
 	};
 	@Override
@@ -203,12 +214,13 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			tmpChat.setMessage(text);
 			tmpChat.setDate(date.getTime());
 			chatDB.insertChat(tmpChat);
+			AllChatData.INSTANCE.addChatData(tmpTo, tmpChat);
 			ConnectionManager.getInstance().sendMsg(recipient, text,ChatActivity.this);
 			RtcLogs.e(TAG, "************************");
 			RtcLogs.e(TAG, "sent [" + text + "] to [" + recipient + "]");
 			RtcLogs.e(TAG, "************************");
 			break;
-		
+
 		default:
 			break;
 		}
