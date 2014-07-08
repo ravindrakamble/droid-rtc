@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativelay"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/LIGHT_GREEN" >
+
+    <ImageView
+        android:id="@+id/img_profile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@string/cd"
+        android:src="@drawable/people" />
+
+    <TextView
+        android:id="@+id/nameID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/img_profile"
+        android:maxLines="1"
+        android:text="@string/test"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/presenceID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nameID"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/img_profile"
+        android:maxLines="1"
+        android:text="@string/test"
+        android:textColor="@color/BLACK"
+        android:textSize="12sp" >
+    </TextView>
+
+    <View
+        android:id="@+id/dividerID"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/presenceID"
+        android:layout_marginTop="10dp"
+        android:background="@color/BLACK" />
+
+    <LinearLayout
+        android:id="@+id/voiceCallLayoutID"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/dividerID"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="60dp"
+        android:background="@drawable/rounded_corner_multi"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/voiceCallImageID"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/cd"
+            android:src="@drawable/audio_call" />
+
+        <TextView
+            android:id="@+id/voiceCallTextID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/voiceCallID"
+            android:layout_gravity="center_horizontal"
+            android:maxLines="1"
+            android:text="@string/audio_call"
+            android:textColor="@color/BLACK"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/videoCallLayoutID"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/dividerID"
+        android:layout_toRightOf="@+id/voiceCallLayoutID"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="35dp"
+        android:background="@drawable/rounded_corner_multi"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/videoCallImageID"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/cd"
+            android:src="@drawable/video_call" />
+
+        <TextView
+            android:id="@+id/videoCallTextID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/videoCallImageID"
+            android:layout_gravity="center_horizontal"
+            android:maxLines="1"
+            android:text="@string/video_call"
+            android:textColor="@color/BLACK"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/chatLayoutID"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/voiceCallLayoutID"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="60dp"
+        android:background="@drawable/rounded_corner_multi"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/chatImageID"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/cd"
+            android:src="@drawable/chat" />
+
+        <TextView
+            android:id="@+id/chatTextID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chatImageID"
+            android:layout_gravity="center_horizontal"
+            android:maxLines="1"
+            android:text="@string/chat"
+            android:textColor="@color/BLACK"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/deleteLayoutID"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/videoCallLayoutID"
+        android:layout_toRightOf="@+id/chatLayoutID"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="35dp"
+        android:background="@drawable/rounded_corner_multi"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/deleteImageID"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/cd"
+            android:src="@drawable/delete_contact" />
+
+        <TextView
+            android:id="@+id/deleteTextID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/deleteImageID"
+            android:maxLines="1"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/delete_contact"
+            android:textColor="@color/BLACK"
+            android:textSize="15sp" >
+        </TextView>
+    </LinearLayout>
+
+</RelativeLayout>

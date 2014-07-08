@@ -10,5 +10,9 @@
     <string name="test">Test String</string>
     <string name="number">10</string>
     <string name="cd">Content Description</string>
+    <string name="audio_call">Audio call</string>
+    <string name="video_call">Video call</string>
+    <string name="chat">Chat</string>
+    <string name="delete_contact">Delete</string>
 
 </resources>

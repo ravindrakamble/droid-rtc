@@ -5,5 +5,5 @@
     android:drawable="@drawable/ic_chat_black" />
   <item
     android:state_selected="false"
-    android:drawable="@drawable/chat" />
+    android:drawable="@drawable/ic_chat_white" />
 </selector>
