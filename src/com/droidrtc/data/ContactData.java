@@ -6,6 +6,7 @@ import org.jivesoftware.smack.packet.Presence.Type;
 
 public class ContactData {
 	private String name;
+	private String user;
 	private String fullName;
 	private Type presence;
 	private String status;
@@ -19,6 +20,14 @@ public class ContactData {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	
 	public String getFullName() {
 		return fullName;
 	}
