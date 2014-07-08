@@ -151,13 +151,13 @@ public class LoginActivity extends Activity implements OnClickListener,UIUpdator
 
 		Intent intent = new Intent(LoginActivity.this,MainActivity.class);
 		startActivityForResult(intent, LOGIN_REQUEST_CODE);
-		//		pw.stopSpinning();
-
 	}
+
 	@Override
 	public void updateUI(int reqCode, Object response) {
 
 	}
+
 	@Override
 	public boolean isFinishing() {
 		if(dialog != null && dialog.isShowing()){

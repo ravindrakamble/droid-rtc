@@ -17,11 +17,13 @@ import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.MessageTypeFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
+import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Mode;
 import org.jivesoftware.smack.packet.Presence.Type;
+import org.jivesoftware.smack.packet.RosterPacket;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.Form;
 import org.jivesoftware.smackx.ReportedData;
@@ -95,7 +97,7 @@ public class ConnectionManager {
 
 	public boolean IsContactAdded(String userName) {
 		for(int index = 0; index < contactList.size(); index++){
-			ContactData contact = contactList.get(index);
+			ContactData contact = contactList.get(index);			
 			if(contact.getName().equalsIgnoreCase(userName)) {
 				return true;
 			}
@@ -103,19 +105,37 @@ public class ConnectionManager {
 		return false;
 	}
 
+	public int getContactIndex(String userName) {		
+		for(int index = 0; index < contactList.size(); index++){
+			ContactData contact = contactList.get(index);			
+			if(contact.getName().equalsIgnoreCase(userName)) {
+				return index;
+			}
+		}
+		return Integer.MAX_VALUE;
+	}	
+	
 	public void checkUserPresent(String userName){
-		this.userName = userName;
-		searchUserTask UserPresent = new searchUserTask();
+		userName = userName + "@" + Constants.SERVER_HOST;
+		this.userName = userName;		
+		searchUserTask UserPresent = new searchUserTask();  
 		pool.execute(UserPresent);
 	}
 
 	public void addUser(String userName) {
+		userName = userName + "@" + Constants.SERVER_HOST;
 		this.userName = userName;
 		AddUserTask addUserTask = new AddUserTask();
 		pool.execute(addUserTask);
+	}	
+	
+	public void deleteUser(String userName){
+		userName = userName + "@" + Constants.SERVER_HOST;
+		this.userName = userName;
+		DeleteUserTask delUserTask = new DeleteUserTask();
+		pool.execute(delUserTask);
 	}
-
-
+	
 	private class ConnectionTask implements Runnable{
 		@Override
 		public void run() {
@@ -215,16 +235,17 @@ public class ConnectionManager {
 			for (RosterEntry entry : entries) {
 				Presence entryPresence = roster.getPresence(entry.getUser());
 				contacts = new ContactData();
-				contacts.setName(entry.getUser());
-				contacts.setPresence(entryPresence.getType());
-				String name = contacts.getName().split("\\@")[0];
-				contacts.setChatHistory(AllChatData.INSTANCE.getChatHistory(name));
+				contacts.setFullName(entry.getName());
+				contacts.setName(entry.getName().split("\\@")[0]);
+				contacts.setUser(entry.getUser());
+				contacts.setPresence(entryPresence.getType());				
+				contacts.setChatHistory(AllChatData.INSTANCE.getChatHistory(contacts.getName()));
 				contactList.add(contacts);
 			}
 			uiUpdator.updateUI(Constants.LIST_CONTACTS_REQ_SUCCESS, contactList);
 		}
-
 	}
+	
 	private class LogoutTask implements Runnable{
 
 		@Override
@@ -255,7 +276,6 @@ public class ConnectionManager {
 			}
 
 		}
-
 	}
 
 	private void sendBroadcastMessage(String from,String msg) {
@@ -275,22 +295,48 @@ public class ConnectionManager {
 		LocalBroadcastManager.getInstance(MyApplication.getContext()).sendBroadcast(intent);
 	}
 
+	private class DeleteUserTask implements Runnable {
+
+		@Override
+		public void run() {
+			RosterPacket packet = new RosterPacket();
+			packet.setType(IQ.Type.SET);
+			int index = getContactIndex(userName);
+			if(index < Integer.MAX_VALUE) {
+				ContactData delContact = contactList.get(index);
+				RosterPacket.Item item = new RosterPacket.Item(delContact.getUser(), delContact.getName());
+				item.setItemType(RosterPacket.ItemType.remove);
+				packet.addRosterItem(item);
+				connection.sendPacket(packet);
+				uiUpdator.updateUI(Constants.DEL_CONTACT_SUCCESS);
+			}
+			else {
+				uiUpdator.updateUI(Constants.DEL_CONTACT_FAILURE);
+			}						
+		}		
+	}
+	
 	private class AddUserTask implements Runnable {
 		@Override
 		public void run() {
-			Presence subscribe = new Presence(Presence.Type.subscribe);
-			String address = userName + Constants.SERVER_HOST;
-            subscribe.setTo(address);
-            connection.sendPacket(subscribe);
-
-            try {
-            	Roster roster = connection.getRoster();
-                roster.createEntry(address, userName, null);
-                uiUpdator.updateUI(Constants.ADD_CONTACT_SUCCESS);
-            } catch (XMPPException e) {
-                e.printStackTrace();
-                uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
-            }
+			if(IsContactAdded(userName)) {
+				uiUpdator.updateUI(Constants.CONTACT_EXISTS);
+			}
+			else {
+				Presence subscribe = new Presence(Presence.Type.subscribe);
+				String address = Constants.SERVER_HOST;
+	            subscribe.setTo(address);
+	            connection.sendPacket(subscribe);
+	            
+	            try {
+	            	Roster roster = connection.getRoster();
+	                roster.createEntry(address, userName, null);
+	                uiUpdator.updateUI(Constants.ADD_CONTACT_SUCCESS);
+	            } catch (XMPPException e) {
+	                e.printStackTrace();
+	                uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
+	            }
+			}			
 		}
 	}
 
@@ -299,45 +345,42 @@ public class ConnectionManager {
 		@Override
 		public void run() {
 			if(IsContactAdded(userName)) {
-				uiUpdator.updateUI(Constants.CONTACT_EXISTS);
-				return;
+				uiUpdator.updateUI(Constants.CONTACT_EXISTS);				
 			}
+			else {
+				UserSearchManager search = new UserSearchManager(connection);
+				try {
+					Form searchForm = search.getSearchForm("search." + connection.getServiceName());
+					Form answerForm = searchForm.createAnswerForm();
 
-			UserSearchManager search = new UserSearchManager(connection);
-			try {
-				Form searchForm = search.getSearchForm("search." + connection.getServiceName());
-				Form answerForm = searchForm.createAnswerForm();
+					answerForm.setAnswer("Username", true);
+					answerForm.setAnswer("search", userName);
 
-				answerForm.setAnswer("Username", true);
-				answerForm.setAnswer("search", "*");
+					ReportedData data = search.getSearchResults(answerForm, "search."+connection.getHost());
 
-				System.out.println("search form");
-				ReportedData data = search.getSearchResults(answerForm, "search."+connection.getHost());
-
-				if(data.getRows() != null)
-				{
-					System.out.println("not null");
-					Iterator<Row> it = data.getRows();
-					while(it.hasNext())
+					if(data.getRows() != null)
 					{
-						Row row = it.next();
-						@SuppressWarnings("rawtypes")
-						Iterator iterator = row.getValues("jid");
-						if(iterator.hasNext())
+						Iterator<Row> it = data.getRows();
+						while(it.hasNext())
 						{
-							String value = iterator.next().toString();
-							if(value.equals(userName)){
-								addUser(userName);
+							Row row = it.next();
+							@SuppressWarnings("rawtypes")
+							Iterator iterator = row.getValues("jid");
+							if(iterator.hasNext())
+							{
+								String value = iterator.next().toString();
+								if(value.equals(userName)){
+									uiUpdator.updateUI(Constants.SEARCH_CONTACT_SUCCESS);
+								}
 							}
 						}
+					}else{
+						uiUpdator.updateUI(Constants.SEARCH_CONTACT_FAILURE);
 					}
-				}else{
-					uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
-				}
-			} catch (XMPPException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				uiUpdator.updateUI(Constants.ADD_CONTACT_FAILURE);
+				} catch (XMPPException e1) {
+					e1.printStackTrace();
+					uiUpdator.updateUI(Constants.SEARCH_CONTACT_FAILURE);
+				}	
 			}
 		}
 	}

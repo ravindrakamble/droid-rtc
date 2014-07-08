@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.jivesoftware.smack.XMPPConnection;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.droidrtc.R;
+import com.droidrtc.activity.ContactInfoActivity;
 import com.droidrtc.activity.UIUpdator;
 import com.droidrtc.adapters.ContactAdapter;
 import com.droidrtc.connection.ConnectionManager;
@@ -32,13 +34,15 @@ import com.droidrtc.data.ContactData;
 import com.droidrtc.util.Constants;
 import com.droidrtc.util.Fonts;
 import com.droidrtc.util.ProgressWheel;
+import com.droidrtc.util.RtcLogs;
 
 public class ContactsFragment extends Fragment implements OnItemClickListener,UIUpdator, OnClickListener{
+	String TAG = "ContactsFragment";
 	private ListView contactListView;
 	XMPPConnection connection;
 	private ArrayAdapter<ContactData> contactAdapter;
 	private ArrayList<ContactData> contactList;
-	private ImageView addContact;
+	private ImageView addContact;	
 	private ProgressWheel pw;
 	private TextView loggedInUser;
 
@@ -47,13 +51,14 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.contacts, container, false);
 		contactListView = (ListView)rootView.findViewById(R.id.list);
-		addContact = (ImageView)rootView.findViewById(R.id.addContactID);
+		addContact = (ImageView)rootView.findViewById(R.id.addContactID);		
 		loggedInUser =(TextView)rootView.findViewById(R.id.nameID);
 		loggedInUser.setText(Constants.LOGGED_IN_USER);
 		loggedInUser.setTypeface(Fonts.THROW_HANDS_BOLD);
 		pw = (ProgressWheel) rootView.findViewById(R.id.progressWheel);
 		pw.setVisibility(View.GONE);
-		addContact.setOnClickListener(this);
+		addContact.setOnClickListener(this);	
+		contactListView.setOnItemClickListener(this);
 		getContacts();
 		
 		return rootView;
@@ -61,11 +66,17 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	private void getContacts(){
 		ConnectionManager.getInstance().getContacts(this);
 	}
-
+		
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		// TODO Auto-generated method stub
+		Intent intent = new Intent(getActivity(),ContactInfoActivity.class);
+		ContactData contactData = contactList.get(position);
+		intent.putExtra("Name", contactData.getName());
+		intent.putExtra("User", contactData.getUser());
+		intent.putExtra("Presence", contactData.getPresence().toString());
+		RtcLogs.e(TAG, "Presence:"+contactData.getPresence());
+		startActivity(intent);
 
 	}
 
@@ -94,7 +105,7 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 				
 				break;
 			case Constants.ADD_CONTACT_FAILURE:
-				showCustomAlert("Adding contact failed");
+				showCustomAlert("Add contact failed");
 				stopSpinningPW();
 				break;
 			case Constants.CONTACT_EXISTS:
@@ -102,6 +113,16 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 				stopSpinningPW();
 				break;
 
+			case Constants.DEL_CONTACT_SUCCESS:
+				stopSpinningPW();
+				getContacts();
+				
+				break;
+			case Constants.DEL_CONTACT_FAILURE:
+				showCustomAlert("Delete contact failed");
+				stopSpinningPW();
+				break;
+				
 			default:
 				break;
 			}
@@ -130,17 +151,17 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.addContactID:
-			
-			showAddContactDialog();
+		case R.id.addContactID:			
+			showAddContactDialog(Constants.ADD_USER);
 			break;
+		
 
 		default:
 			break;
 		}
 
 	}	
-	private void showAddContactDialog() {
+	private void showAddContactDialog(final int operation) {
 		final Dialog dialog = new Dialog(getActivity());
 
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -163,8 +184,14 @@ public class ContactsFragment extends Fragment implements OnItemClickListener,UI
 				}
 				contactListView.setAlpha(.2f);
 				pw.spin();
-				pw.setText("Adding Contact...");
-				ConnectionManager.getInstance().checkUserPresent(editText.getText().toString());
+				if(operation == Constants.ADD_USER) {
+					pw.setText("Adding Contact...");
+					ConnectionManager.getInstance().addUser(editText.getText().toString());	
+				}
+				else {
+					pw.setText("Deleting Contact...");
+					ConnectionManager.getInstance().deleteUser(editText.getText().toString());
+				}
 			}
 		});
 		cancelButton.setOnClickListener(new OnClickListener() {

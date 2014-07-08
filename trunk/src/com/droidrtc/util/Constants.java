@@ -10,7 +10,8 @@ public class Constants {
 	public static final Boolean PRINT_LOGS = true;
 	public static boolean inChatActivity = false;
 	public static String LOGGED_IN_USER;
-	
+	public static int ADD_USER = 0;
+	public static int DEL_USER = 1;
 	
 	public static final int CONN_REQ_SUCCESS = 1;
 	public static final int CONN_REQ_FAILURE = 2;
@@ -27,6 +28,10 @@ public class Constants {
 	public static final int RECV_CHAT = 13;
 	public static final int LOGOUT_SUCCESS = 14;
 	public static final int LOGOUT_FAILURE = 15;
+	public static final int DEL_CONTACT_SUCCESS = 16;
+	public static final int DEL_CONTACT_FAILURE = 17;
+	public static final int SEARCH_CONTACT_SUCCESS = 18;
+	public static final int SEARCH_CONTACT_FAILURE = 19;
 	
 	
 }
