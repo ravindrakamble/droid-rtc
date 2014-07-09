@@ -117,7 +117,6 @@ public class ChatActivity extends Activity implements UIUpdator, OnClickListener
 			}
 		});
 	}
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onResume() {
 		super.onResume();
